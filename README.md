@@ -9,4 +9,4 @@ source venv/bin/activate
 pip3 install -r requirements.txt
 
 4. run application: 
-python3 application.py1
+python3 application.py
