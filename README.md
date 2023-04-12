@@ -1,9 +1,10 @@
 # User guide
 1. create virtual environment:
-python3 -m venv venv
+python -m venv venv
 
 2. activate venv:
-source venv/bin/activate
+cd venv
+./Scripts/activate
 
 3. install all the required package:
 pip3 install -r requirements.txt
