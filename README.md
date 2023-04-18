@@ -10,4 +10,4 @@ cd venv
 pip3 install -r requirements.txt
 
 4. run application: 
-python3 application.py
+mongo_db.py
