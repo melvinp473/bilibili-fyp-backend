@@ -1,8 +1,11 @@
 import os
 
+from flask import Blueprint
 from pymongo import MongoClient
 import pprint
 import dotenv
+
+mongo_db_api = Blueprint('facebook_feed_api', __name__, url_prefix='/mongoDB/feed')
 
 # this should be put in application.py
 dotenv.load_dotenv()
