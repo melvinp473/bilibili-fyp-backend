@@ -5,25 +5,26 @@ from pymongo import MongoClient
 import pprint
 import dotenv
 
-mongo_db_api = Blueprint('facebook_feed_api', __name__, url_prefix='/mongoDB/feed')
+class mongoDB:
 
-# this should be put in application.py
-dotenv.load_dotenv()
+    # this should be put in application.py
+    dotenv.load_dotenv()
+    def __init__(self):
 
-MONGO_DB_CONNECTION = os.getenv('MONGO_DB_CLUSTER_ENDPOINT')
+        self.MONGO_DB_CONNECTION = os.getenv('MONGO_DB_CLUSTER_ENDPOINT')
 
+        # connect to cluster
+        self.client = MongoClient(self.MONGO_DB_CONNECTION)
 
-# connect to cluster
-client = MongoClient(MONGO_DB_CONNECTION)
+        # select database, select collection
+        self.db = self.client['FIT4701']
+        self.collection = self.db['Data']
 
-# select database, select collection
-db = client['FIT4701']
-collection = db['Data']
+    def print_table(self):
+        # print certain documents
+        all_documents = self.collection.find({"CODE": {"$lt": 5}})
+        for document in all_documents:
+            pprint.pprint(document)
 
-# print certain documents
-all_documents = collection.find({"CODE": {"$lt": 5}})
-for document in all_documents:
-    pprint.pprint(document)
-
-# print document count
-print(collection.count_documents({}))
+        # print document count
+        print(self.collection.count_documents({}))

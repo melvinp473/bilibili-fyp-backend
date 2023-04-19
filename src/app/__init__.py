@@ -1,5 +1,7 @@
 from flask import Flask, Response, request, Blueprint
 from flask_cors import CORS
+from ..db import mongo_db
+
 import os
 
 def create_app(debug=False):
@@ -19,7 +21,13 @@ def create_app(debug=False):
     def receive():
 
         data = request.get_json()
+
         print(data)
+
+        db = mongo_db.mongoDB()
+
+        db.print_table()
+
         return Response(status=200)
     return application
 
