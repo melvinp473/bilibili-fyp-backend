@@ -7,13 +7,13 @@ from weka.classifiers import PredictionOutput, KernelClassifier, Kernel, Evaluat
 
 jvm.start(system_cp=True, packages=True, max_heap_size="512m")
 
-print(os.getcwd())
+# print(os.getcwd())
 
 ml_data_dir = "/datasets/"
 loader = Loader(classname="weka.core.converters.ArffLoader")
 ml_data = loader.load_file(os.getcwd() + ml_data_dir + "MLDATA.csv.arff")
 ml_data.class_is_last()
-print(ml_data)
+# print(ml_data)
 
 cls = KernelClassifier(classname="weka.classifiers.functions.SMOreg", options=["-N", "0"])
 kernel = Kernel(classname="weka.classifiers.functions.supportVector.RBFKernel", options=["-G", "0.1"])
