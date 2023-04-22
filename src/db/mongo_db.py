@@ -4,8 +4,9 @@ from flask import Blueprint
 from pymongo import MongoClient
 import pprint
 import dotenv
+from bson.objectid import ObjectId
 
-class mongoDB:
+class Database:
 
     # this should be put in application.py
     dotenv.load_dotenv()
@@ -15,16 +16,26 @@ class mongoDB:
 
         # connect to cluster
         self.client = MongoClient(self.MONGO_DB_CONNECTION)
+        #
+        # # select database, select collection
+        # self.db = self.client['FIT4701']
+        # self.data_collection = self.db['Data']
+        # self.dataset_collection = self.db['Dataset']
+        # self.user_collection = self.db['User']
 
-        # select database, select collection
-        self.db = self.client['FIT4701']
-        self.collection = self.db['Data']
+
+    def get_client(self):
+        return self.client
 
     def print_table(self):
         # print certain documents
-        all_documents = self.collection.find({"CODE": {"$lt": 5}})
+        all_documents = self.data_collection.find({"CODE": {"$lt": 5}})
         for document in all_documents:
             pprint.pprint(document)
 
         # print document count
-        print(self.collection.count_documents({}))
+        print(self.data_collection.count_documents({}))
+
+
+
+
