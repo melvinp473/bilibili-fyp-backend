@@ -10,6 +10,4 @@ Jinja2==2.11.1
 Werkzeug==1.0.0
 MarkupSafe==1.1.1
 itsdangerous==1.1.0
-numpy==1.22.4+mkl
-python-javabridge==4.0.3
 python-weka-wrapper3==0.2.12
