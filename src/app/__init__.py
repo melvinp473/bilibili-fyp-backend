@@ -34,6 +34,15 @@ def create_app(debug=False):
         data = {'message': 'Successful'}
         response = jsonify(data)
         return response
+
+    @application.route('/getDataset', methods=['POST'])
+    def get_dataset():
+        data = request.get_json()
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
+        mongo_db_function.get_by_query(collection,data,"user_id")
+
+
     return application
 
 
