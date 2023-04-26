@@ -39,12 +39,14 @@ def create_app(debug=False):
     def get_dataset():
         data = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
-        collection = mongo_db_function.get_collection(db, "Data")
+        collection = mongo_db_function.get_collection(db, "Dataset")
         list = mongo_db_function.get_by_query(collection,data,"user_id")
-        data = {'message': list}
-        response = jsonify(data)
+        # new_list = json.dumps(list)
+        r_data = {'message': list}
+        print(r_data)
+        response = jsonify(r_data)
         return response
-
+        # return
 
     return application
 

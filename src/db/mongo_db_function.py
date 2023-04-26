@@ -35,6 +35,9 @@ def get_by_query(collection: Collection, dict: dict, key: str):
     data_list = []
     count = 0
     for i in doc:
+        id = i.get('_id')
+        new_id = str(id)
+        i['_id'] = new_id
         data_list.append(i)
         count = count + 1
     print(count)
