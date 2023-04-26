@@ -13,7 +13,7 @@ class Database:
     def __init__(self):
 
         self.MONGO_DB_CONNECTION = os.getenv('MONGO_DB_CLUSTER_ENDPOINT')
-
+        print(self.MONGO_DB_CONNECTION)
         # connect to cluster
         self.client = MongoClient(self.MONGO_DB_CONNECTION)
         #
