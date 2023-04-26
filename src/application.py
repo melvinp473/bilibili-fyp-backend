@@ -29,13 +29,17 @@ if __name__ == '__main__':
     # if args.port:
     #     port = args.port
 
-    # test = mongo_db()
-    # db = mongo_db_function.get_database('FIT4701')
-    # collection = mongo_db_function.get_collection(db,"Data")
-    # change = {"key1": "value1", "key2": "value4"}
-    # mongo_db_function.upsert_document(collection,"64367660c584bb4958e67921",change)
-    # mongo_db_function.create_document(collection,change)
-    # mongo_db_function.delete_document(collection,"64440aa0ac2dbfd2ce049252")
+    test = mongo_db()
+    db = mongo_db_function.get_database('FIT4701')
+    collection = mongo_db_function.get_collection(db,"Data")
+    find = {"DATASET_ID": "64355a8d78b04a2b1549c1c5"}
+    store = mongo_db_function.get_by_query(collection,find,"DATASET_ID")
+    path = mongo_db_function.list_to_csv(store)
+    mongo_db_function.csv_to_arff(path)
+    mongo_db_function.remove_file(path)
+
+
+
 
 
 
