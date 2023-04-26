@@ -40,7 +40,10 @@ def create_app(debug=False):
         data = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
-        mongo_db_function.get_by_query(collection,data,"user_id")
+        list = mongo_db_function.get_by_query(collection,data,"user_id")
+        data = {'message': list}
+        response = jsonify(data)
+        return response
 
 
     return application
