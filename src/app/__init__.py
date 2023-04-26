@@ -31,8 +31,8 @@ def create_app(debug=False):
 
         mongo_db_function.create_document(collection, data)
 
-        response = make_response(jsonify(message='Successful'))
-        response.data = 'Successful'
+        data = {'message': 'Successful'}
+        response = jsonify(data)
         return response
     return application
 
