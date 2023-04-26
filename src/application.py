@@ -34,9 +34,9 @@ if __name__ == '__main__':
     collection = mongo_db_function.get_collection(db,"Data")
     find = {"DATASET_ID": "64355a8d78b04a2b1549c1c5"}
     store = mongo_db_function.get_by_query(collection,find,"DATASET_ID")
-    path = mongo_db_function.list_to_csv(store)
-    mongo_db_function.csv_to_arff(path)
-    mongo_db_function.remove_file(path)
+    # path = mongo_db_function.list_to_csv(store)
+    # mongo_db_function.csv_to_arff(path)
+    # mongo_db_function.remove_file(path)
 
 
 

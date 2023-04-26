@@ -1,6 +1,8 @@
+import json
+
 from flask import Flask, Response, request, Blueprint
 from flask_cors import CORS
-from ..db import mongo_db
+from ..db import mongo_db, mongo_db_function
 
 import os
 
@@ -24,9 +26,10 @@ def create_app(debug=False):
 
         print(data)
 
-        db = mongo_db.mongoDB()
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
 
-        db.print_table()
+        mongo_db_function.create_document(collection, data)
 
         return Response(status=200)
     return application
