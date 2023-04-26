@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, Response, request, Blueprint, make_response
+from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from flask_cors import CORS
 from ..db import mongo_db, mongo_db_function
 
@@ -31,7 +31,7 @@ def create_app(debug=False):
 
         mongo_db_function.create_document(collection, data)
 
-        response = make_response('Hello, world!')
+        response = make_response(jsonify(message='Successful'))
         response.data = 'Successful'
         return response
     return application
