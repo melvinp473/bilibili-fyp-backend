@@ -40,9 +40,6 @@ def get_by_query(collection: Collection, dict: dict, key: str):
         i['_id'] = new_id
         data_list.append(i)
         count = count + 1
-    print(count)
-    print("-------------------------------")
-    print(data_list)
     return data_list
 
 
@@ -65,16 +62,18 @@ def delete_document(collection: Collection, id):
     return doc_id
 
 def list_to_csv(list: list):
+
     fields = list[0].keys()
+    for i in list:
+        i.pop('_id')
+        i.pop('DATASET_ID')
     file_name = 'list.csv'
     current_dir = os.getcwd()
-    print(current_dir)
     file_path = os.path.join(current_dir, file_name)
     with open('list.csv', mode='w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fields)
         writer.writeheader()
         writer.writerows(list)
-    print(file_path)
     return file_path
 
 def csv_to_arff(file_path):
@@ -83,9 +82,13 @@ def csv_to_arff(file_path):
     file_name = 'list.arff'
     path = os.path.join(current_dir, file_name)
     with open('list.arff', 'w') as f:
-        f.write('@relation list\n\n')
+        f.write('@relation MLDATA\n\n')
         for col in csv.columns:
-            f.write('@attribute {} {}\n'.format(col, 'NUMERIC' if csv[col].dtype == 'float64' else 'STRING'))
+            col_nume = col
+            if ' ' in col:
+                col_nume = "'" + col + "'"
+                print(col_nume)
+            f.write('@attribute {} {}\n'.format(col_nume, 'numeric' if csv[col].dtype == 'float64' or csv[col].dtype == 'int64' else 'STRING'))
         f.write('\n@data\n')
         for _, row in csv.iterrows():
             f.write(','.join(str(val) for val in row.values) + '\n')
