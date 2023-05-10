@@ -28,41 +28,39 @@ def create_app(debug=False):
     @application.route('/connect', methods=['POST'])
     def receive():
 
-        data = request.get_json()
+        request_json = request.get_json()
 
-        print(data)
+        print(request_json)
 
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
 
-        mongo_db_function.create_document(collection, data)
+        mongo_db_function.create_document(collection, request_json)
 
         data = {'message': 'Successful'}
         response = jsonify(data)
         return response
 
-    @application.route('/getDataset', methods=['POST'])
+    @application.route('/get-dataset', methods=['POST'])
     def get_dataset():
-        data = request.get_json()
+        request_json = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Dataset")
-        list = mongo_db_function.get_by_query(collection,data,"user_id")
+        list = mongo_db_function.get_by_query(collection,request_json,"user_id")
         # new_list = json.dumps(list)
-        r_data = {'message': list}
+        r_data = {'data': list}
         print(r_data)
         response = jsonify(r_data)
         return response
 
 
-    @application.route('/machineLearning', methods=['POST'])
+    @application.route('/machine-learning', methods=['POST'])
     def run_machineLearning():
-        data = request.get_json()
-        id = data["dataset_id"]
+        request_json = request.get_json()
         print(id)
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
-        find = {"DATASET_ID": id}
-        store = mongo_db_function.get_by_query(collection, find, "DATASET_ID")
+        store = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
         path = mongo_db_function.list_to_csv(store)
         print(path)
         df = pd.read_csv(path)
@@ -84,17 +82,28 @@ def create_app(debug=False):
         print("R2-score: %.4f" % r2_score(test_y, test_y_))
 
         return_dict = {"Coefficients": regr.coef_.tolist()[0], "Intercept": regr.intercept_.tolist()[0]}
-        return_dict.update({"scikit metrics mean absolute error":mean_absolute_error(test_y_, test_y)})
-        return_dict.update({"scikit metrics mean squared error":mean_squared_error(test_y_, test_y)})
-        return_dict.update({"Residual sum of squares (MSE)": np.mean((test_y_ - test_y) ** 2)})
-        return_dict.update({"R2-score": r2_score(test_y, test_y_)})
-        json_data = json.dumps(return_dict)
+        return_dict.update({"mae":mean_absolute_error(test_y_, test_y)})
+        return_dict.update({"mse":mean_squared_error(test_y_, test_y)})
+        return_dict.update({"r2_score": r2_score(test_y, test_y_)})
+        return_dict = {'data': return_dict}
+        json_data = jsonify(return_dict)
         response = json_data
 
         mongo_db_function.remove_file(path)
 
         return response
 
+    @application.route('/get-data', methods=['POST'])
+    def get_data():
+        # by jiahao: not used for now, just thinking if we should show the data or not
+        request_json = request.get_json()
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
+        list = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
+        r_data = {'data': list}
+        print(r_data)
+        response = jsonify(r_data)
+        return response
 
 
     return application
