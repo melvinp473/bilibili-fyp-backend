@@ -83,24 +83,15 @@ def create_app(debug=False):
         print("Residual sum of squares (MSE): %.4f" % np.mean((test_y_ - test_y) ** 2))
         print("R2-score: %.4f" % r2_score(test_y, test_y_))
 
-        list = []
-        list.append("Coefficients")
-        list.append(regr.coef_.tolist())
-        list.append("Intercept")
-        list.append(regr.intercept_.tolist())
-        list.append("scikit metrics mean absolute error")
-        list.append(mean_absolute_error(test_y_, test_y))
-        list.append("scikit metrics mean squared error")
-        list.append(mean_squared_error(test_y_, test_y))
-        list.append("Residual sum of squares (MSE)")
-        list.append(np.mean((test_y_ - test_y) ** 2))
-        list.append("R2-score")
-        list.append(r2_score(test_y, test_y_))
-        print(list)
-        r_data = {'message': list}
-        response = jsonify(r_data)
-        jvm.stop()
-        # mongo_db_function.remove_file(path)
+        return_dict = {"Coefficients": regr.coef_.tolist()[0], "Intercept": regr.intercept_.tolist()[0]}
+        return_dict.update({"scikit metrics mean absolute error":mean_absolute_error(test_y_, test_y)})
+        return_dict.update({"scikit metrics mean squared error":mean_squared_error(test_y_, test_y)})
+        return_dict.update({"Residual sum of squares (MSE)": np.mean((test_y_ - test_y) ** 2)})
+        return_dict.update({"R2-score": r2_score(test_y, test_y_)})
+        json_data = json.dumps(return_dict)
+        response = json_data
+
+        mongo_db_function.remove_file(path)
 
         return response
 
