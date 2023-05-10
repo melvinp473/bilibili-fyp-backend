@@ -4,10 +4,11 @@ from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from flask_cors import CORS
 from ..db import mongo_db, mongo_db_function
 import weka.core.jvm as jvm
-from weka.core.classes import Random
-from weka.core.converters import Loader
-from weka.classifiers import PredictionOutput, KernelClassifier, Kernel, Evaluation
-import re
+import pandas as pd
+import sklearn.linear_model as linear_model
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
+import numpy as np
 
 import os
 
@@ -63,26 +64,43 @@ def create_app(debug=False):
         find = {"DATASET_ID": id}
         store = mongo_db_function.get_by_query(collection, find, "DATASET_ID")
         path = mongo_db_function.list_to_csv(store)
-        arff_path = mongo_db_function.csv_to_arff(path)
-        jvm.start(system_cp=True, packages=True, max_heap_size="512m")
-        loader = Loader(classname="weka.core.converters.ArffLoader")
-        ml_data = loader.load_file(arff_path)
-        ml_data.class_is_last()
-        cls = KernelClassifier(classname="weka.classifiers.functions.SMOreg", options=["-N", "0"])
-        kernel = Kernel(classname="weka.classifiers.functions.supportVector.RBFKernel", options=["-G", "0.1"])
-        cls.kernel = kernel
-        pout = PredictionOutput(classname="weka.classifiers.evaluation.output.prediction.PlainText")
-        evl = Evaluation(ml_data)
-        evl.crossvalidate_model(cls, ml_data, 10, Random(1), pout)
-        result = re.split(r"\s{2,}|\n", evl.summary())
-        r_result = result[1:-1]
-        r_data = {'message': r_result}
-        print(pout.buffer_content())
-        r_pout = re.split(r"\s{2,}|\n",pout.buffer_content())
-        print(r_pout)
+        print(path)
+        df = pd.read_csv(path)
+        print(df.head())
+        regr = linear_model.LinearRegression()
+        x = df[['SMOKING', 'DRINKING', 'LACK_EXERCISE', 'AGE65_OVER', 'AGE25_44', 'EARLY_SCHOOL_LEAVERS',
+                'HCC_HOLDER', 'RAC_PLACE', 'TOTAL_CLIENTS', 'DIABETES', 'MENTAL_DISEASE', 'HYPERTENSION']]
+        y = df[["STROKE"]]
+        train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+        regr.fit(train_x, train_y)
+        test_y_ = regr.predict(test_x)
+
+        print('Coefficients: ', regr.coef_)
+        print('Intercept: ', regr.intercept_)
+
+        print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
+        print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
+        print("Residual sum of squares (MSE): %.4f" % np.mean((test_y_ - test_y) ** 2))
+        print("R2-score: %.4f" % r2_score(test_y, test_y_))
+
+        list = []
+        list.append("Coefficients")
+        list.append(regr.coef_.tolist())
+        list.append("Intercept")
+        list.append(regr.intercept_.tolist())
+        list.append("scikit metrics mean absolute error")
+        list.append(mean_absolute_error(test_y_, test_y))
+        list.append("scikit metrics mean squared error")
+        list.append(mean_squared_error(test_y_, test_y))
+        list.append("Residual sum of squares (MSE)")
+        list.append(np.mean((test_y_ - test_y) ** 2))
+        list.append("R2-score")
+        list.append(r2_score(test_y, test_y_))
+        print(list)
+        r_data = {'message': list}
         response = jsonify(r_data)
         jvm.stop()
-        mongo_db_function.remove_file(path)
+        # mongo_db_function.remove_file(path)
 
         return response
 
