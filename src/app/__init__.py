@@ -66,8 +66,9 @@ def create_app(debug=False):
         df = pd.read_csv(path)
         print(df.head())
         regr = linear_model.LinearRegression()
-        x = df[['SMOKING', 'DRINKING', 'LACK_EXERCISE', 'AGE65_OVER', 'AGE25_44', 'EARLY_SCHOOL_LEAVERS',
-                'HCC_HOLDER', 'RAC_PLACE', 'TOTAL_CLIENTS', 'DIABETES', 'MENTAL_DISEASE', 'HYPERTENSION']]
+        # x = df[['SMOKING', 'DRINKING', 'LACK_EXERCISE', 'AGE65_OVER', 'AGE25_44', 'EARLY_SCHOOL_LEAVERS',
+        #         'HCC_HOLDER', 'RAC_PLACE', 'TOTAL_CLIENTS', 'DIABETES', 'MENTAL_DISEASE', 'HYPERTENSION']]
+        x = df [request_json["selected_attributes"]]
         y = df[["STROKE"]]
         train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
         regr.fit(train_x, train_y)
