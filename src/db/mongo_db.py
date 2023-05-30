@@ -16,13 +16,6 @@ class Database:
         print(self.MONGO_DB_CONNECTION)
         # connect to cluster
         self.client = MongoClient(self.MONGO_DB_CONNECTION)
-        #
-        # # select database, select collection
-        # self.db = self.client['FIT4701']
-        # self.data_collection = self.db['Data']
-        # self.dataset_collection = self.db['Dataset']
-        # self.user_collection = self.db['User']
-
 
     def get_client(self):
         return self.client
