@@ -106,6 +106,13 @@ def create_app(debug=False):
         response = jsonify(r_data)
         return response
 
+    @application.route('/upload-dataset', methods=['POST'])
+    def upload_dataset():
+        f = request.files['dataset']
+        f.save(f.filename)
+        response = "received " + f.filename
+        return response
+
 
     return application
 
