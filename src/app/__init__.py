@@ -75,7 +75,7 @@ def create_app(debug=False):
 
         if algo == "knn":
             json_data = machine_learning.kth_nearest_neighbors(path, selected_attributes)
-        elif algo == "decision tress":
+        elif algo == "decision trees":
             json_data = machine_learning.decision_trees(path, selected_attributes)
         elif algo == "svm":
             json_data = machine_learning.support_vector_machines(path, selected_attributes)
@@ -115,12 +115,12 @@ def create_app(debug=False):
         collection = mongo_db_function.get_collection(db, "Dataset")
 
         data = {
-            "name" : "demo",
-            "user_id" : "test",
-            "status" : "ACTIVE",
-            "create_date" : "31/5/23",
-            "update_date" : "31/5/23",
-            "attribute" : columns
+            "name": "demo",
+            "user_id": "test",
+            "status": "ACTIVE",
+            "create_date": "31/5/23",
+            "update_date": "31/5/23",
+            "attributes": columns
         }
 
         result = collection.insert_one(data)
