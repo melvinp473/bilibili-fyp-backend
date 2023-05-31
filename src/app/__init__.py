@@ -12,8 +12,8 @@ import numpy as np
 
 import os
 
-def create_app(debug=False):
 
+def create_app(debug=False):
     # print(os.getenv('FLASK_ENV'))
 
     application = Flask(__name__)
@@ -23,7 +23,6 @@ def create_app(debug=False):
     @application.route("/", methods=['GET'])
     def home():
         return "Hello, World!"
-
 
     @application.route('/connect', methods=['POST'])
     def receive():
@@ -46,13 +45,12 @@ def create_app(debug=False):
         request_json = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Dataset")
-        list = mongo_db_function.get_by_query(collection,request_json,"user_id")
+        list = mongo_db_function.get_by_query(collection, request_json, "user_id")
         # new_list = json.dumps(list)
         r_data = {'data': list}
         print(r_data)
         response = jsonify(r_data)
         return response
-
 
     @application.route('/machine-learning', methods=['POST'])
     def run_machineLearning():
@@ -64,17 +62,28 @@ def create_app(debug=False):
         selected_attributes = request_json["selected_attributes"]
         algo = request_json["algo_type"]
 
-
-
         # machine_learning.support_vector_machines(path,selected_attributes)
-        machine_learning.kth_nearest_neighbors(path,selected_attributes)
+        # machine_learning.kth_nearest_neighbors(path,selected_attributes)
 
-        json_data = machine_learning.linear_regression(path,selected_attributes)
-        response = json_data
+        # json_data = machine_learning.linear_regression(path,selected_attributes)
+        # response = json_data
+
+        # mongo_db_function.remove_file(path)
+
+        json_data = ""
+
+        if algo == "knn":
+            json_data = machine_learning.kth_nearest_neighbors(path, selected_attributes)
+        elif algo == "decision tress":
+            json_data = machine_learning.decision_trees(path, selected_attributes)
+        elif algo == "svm":
+            json_data = machine_learning.support_vector_machines(path, selected_attributes)
+        elif algo == "linear regression":
+            json_data = machine_learning.linear_regression(path, selected_attributes)
 
         mongo_db_function.remove_file(path)
 
-        return response
+        return json_data
 
     @application.route('/get-data', methods=['POST'])
     def get_data():
@@ -95,7 +104,4 @@ def create_app(debug=False):
         response = "received " + f.filename
         return response
 
-
     return application
-
-
