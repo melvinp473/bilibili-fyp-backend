@@ -62,38 +62,13 @@ def create_app(debug=False):
         store = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
         path = mongo_db_function.list_to_csv(store)
         selected_attributes = request_json["selected_attributes"]
+        algo = request_json["algo_type"]
 
-        # print(path)
-        #
-        # df = pd.read_csv(path)
-        # selected_attributes = request_json["selected_attributes"]
-        # print(df.head())
-        # regr = linear_model.LinearRegression()
-        # x = df [selected_attributes]
-        # print("this is x")
-        # print(x)
-        # y = df[["STROKE"]]
-        # train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
-        # regr.fit(train_x, train_y)
-        # test_y_ = regr.predict(test_x)
-        #
-        # print('Coefficients: ', regr.coef_)
-        # print('Intercept: ', regr.intercept_)
-        #
-        # print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
-        # print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
-        # print("Residual sum of squares (MSE): %.4f" % np.mean((test_y_ - test_y) ** 2))
-        # print("R2-score: %.4f" % r2_score(test_y, test_y_))
-        #
-        # return_dict = {"Coefficients": regr.coef_.tolist()[0], "Intercept": regr.intercept_.tolist()[0]}
-        # return_dict.update({"mae":mean_absolute_error(test_y_, test_y)})
-        # return_dict.update({"mse":mean_squared_error(test_y_, test_y)})
-        # return_dict.update({"r2_score": r2_score(test_y, test_y_)})
-        # return_dict = {'data': return_dict}
-        # json_data = jsonify(return_dict)
-        #
 
-        machine_learning.support_vector_machines(path,selected_attributes)
+
+        # machine_learning.support_vector_machines(path,selected_attributes)
+        machine_learning.kth_nearest_neighbors(path,selected_attributes)
+
         json_data = machine_learning.linear_regression(path,selected_attributes)
         response = json_data
 
