@@ -4,6 +4,7 @@ from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from flask_cors import CORS
 from ..db import mongo_db, mongo_db_function
 from ..ml import machine_learning
+import csv
 import pandas as pd
 import sklearn.linear_model as linear_model
 from sklearn.model_selection import train_test_split
@@ -92,6 +93,44 @@ def create_app(debug=False):
     def upload_dataset():
         f = request.files['dataset']
         f.save(f.filename)
+        with open(f.filename, 'r') as csvfile:
+            reader = csv.reader(csvfile)
+
+            columns = next(reader)
+            columns.pop()
+            print(columns)
+            for column in columns:
+                print(column)
+
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Dataset")
+
+        data = {
+            "name" : "demo",
+            "user_id" : "test",
+            "status" : "ACTIVE",
+            "create_date" : "31/5/23",
+            "update_date" : "31/5/23",
+            "attribute" : columns
+        }
+
+        result = collection.insert_one(data)
+        print("Inserted ID:", result.inserted_id)
+
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
+        csvfile = open(f.filename, 'r')
+        reader = csv.DictReader(csvfile)
+
+        for each in reader:
+            row = {}
+            for field in columns:
+                row[field] = each[field]
+            id = str(result.inserted_id)
+            row["DATASET_ID"] = id
+
+            print(row)
+            collection.insert_one(row)
         response = "received " + f.filename
         return response
 
