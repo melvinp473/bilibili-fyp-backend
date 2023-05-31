@@ -93,6 +93,7 @@ def create_app(debug=False):
         # json_data = jsonify(return_dict)
         #
 
+        machine_learning.support_vector_machines(path,selected_attributes)
         json_data = machine_learning.linear_regression(path,selected_attributes)
         response = json_data
 
