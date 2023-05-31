@@ -106,8 +106,9 @@ def create_app(debug=False):
             reader = csv.reader(csvfile)
 
             columns = next(reader)
-            columns.pop()
+            attr_col = columns[:-1]
             print(columns)
+
             for column in columns:
                 print(column)
 
@@ -120,7 +121,7 @@ def create_app(debug=False):
             "status": "ACTIVE",
             "create_date": "31/5/23",
             "update_date": "31/5/23",
-            "attributes": columns
+            "attributes": attr_col
         }
 
         result = collection.insert_one(data)
