@@ -18,7 +18,7 @@
 # Virtual environment folder
 venv
 virt
-env
+.env
 
 # Virtual environemnt variables
 *.env
