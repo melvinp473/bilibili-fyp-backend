@@ -5,6 +5,7 @@ from flask_cors import CORS
 from ..db import mongo_db, mongo_db_function
 from ..ml import machine_learning
 import csv
+from datetime import datetime
 import pandas as pd
 import sklearn.linear_model as linear_model
 from sklearn.model_selection import train_test_split
@@ -100,6 +101,7 @@ def create_app(debug=False):
 
     @application.route('/upload-dataset', methods=['POST'])
     def upload_dataset():
+        user_id = request.form['user_id']
         f = request.files['dataset']
         f.save(f.filename)
         with open(f.filename, 'r') as csvfile:
@@ -116,11 +118,11 @@ def create_app(debug=False):
         collection = mongo_db_function.get_collection(db, "Dataset")
 
         data = {
-            "name": "demo",
-            "user_id": "test",
+            "name": f.filename.split('.')[0],
+            "user_id": user_id,
             "status": "ACTIVE",
-            "create_date": "31/5/23",
-            "update_date": "31/5/23",
+            "create_date": datetime.now(),
+            "update_date": datetime.now(),
             "attributes": attr_col
         }
 
@@ -132,16 +134,21 @@ def create_app(debug=False):
         csvfile = open(f.filename, 'r')
         reader = csv.DictReader(csvfile)
 
+        data_rows = []
         for each in reader:
             row = {}
             for field in columns:
                 row[field] = each[field]
             id = str(result.inserted_id)
             row["DATASET_ID"] = id
-
             print(row)
-            collection.insert_one(row)
-        response = "received " + f.filename
+            data_rows.append(row)
+
+        insert_result = collection.insert_many(data_rows)
+        if insert_result.acknowledged:
+            response = "successfully uploaded " + f.filename
+        else:
+            response = "Error when inserting data to database"
         return response
 
     return application
