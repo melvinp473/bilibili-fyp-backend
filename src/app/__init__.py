@@ -3,7 +3,8 @@ import json
 from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from flask_cors import CORS
 from ..db import mongo_db, mongo_db_function
-from ..ml import machine_learning
+from ..ml import machine_learning, preprocessing
+
 import csv
 from datetime import datetime
 import pandas as pd
@@ -150,5 +151,24 @@ def create_app(debug=False):
         else:
             response = "Error when inserting data to database"
         return response
+
+    @application.route('/preprocessing', methods=['POST'])
+    def do_preprocessing():
+        request_json = request.get_json()
+        dataset_id = request_json['DATASET_ID']
+        preprocessing_code = request_json['preprocessing_code']
+        print(dataset_id)
+        input = {"DATASET_ID": dataset_id}
+
+        if preprocessing_code == 'mean imputation':
+            preprocessing.missing_values(input)
+
+        if preprocessing_code == 'standardization':
+            preprocessing.standardization(input)
+
+        response = "preprocessing done"
+        return response
+
+
 
     return application
