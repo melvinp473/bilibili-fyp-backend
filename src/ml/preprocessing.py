@@ -4,7 +4,7 @@ import pandas as pd
 from src.db import mongo_db_function
 
 
-def missing_values():
+def missing_values(dataset_id):
     # Preprocessing with string "n/a"
     # X = [["n/a", 3, 5], [2, "n/a", 9], [8, 7, "n/a"]]
     # imp_mean = SimpleImputer(missing_values="n/a", strategy='mean')
@@ -23,7 +23,7 @@ def missing_values():
 
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
-    store = mongo_db_function.get_by_query(collection, {"DATASET_ID": "6480818a2b02836f0686e027"}, "DATASET_ID")
+    store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
 
     # print(store[0].values())
     db_data = []
@@ -42,6 +42,9 @@ def missing_values():
     arr = df.values
     # print(arr)
     imp_mean = SimpleImputer(missing_values=np.nan, strategy='mean')
-    X_new = imp_mean.fit_transform(arr)
-    # print(type(X_new[0][0]))
-    # print(X_new)
+    arr_new = imp_mean.fit_transform(arr)
+    # print(type(arr_new[0][0]))
+    # print(arr_new)
+
+
+# missing_values(dataset_id={"DATASET_ID": "6480818a2b02836f0686e027"})
