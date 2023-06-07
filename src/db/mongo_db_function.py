@@ -61,6 +61,15 @@ def delete_document(collection: Collection, id):
     collection.delete_one({'_id': doc_id})
     return doc_id
 
+def delete_dataset(collection: Collection, dataset_id):
+    filter = {'DATASET_ID': dataset_id}
+    collection.delete_many(filter)
+    return dataset_id
+
+def insert_dataset(collection: Collection, insert_data):
+    collection.insert_many(insert_data)
+    return
+
 def list_to_csv(list: list):
 
     fields = list[0].keys()
@@ -105,3 +114,4 @@ def remove_file(file_path):
     except Exception as e:
         print("remove fail:", file_path)
         print("error:", e)
+
