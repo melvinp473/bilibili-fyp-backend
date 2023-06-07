@@ -3,9 +3,6 @@ import numpy as np
 import pandas as pd
 from src.db import mongo_db_function
 
-db = mongo_db_function.get_database('FIT4701')
-collection = mongo_db_function.get_collection(db, "Data")
-mongo_db_function.delete_dataset(collection, "000")
 
 def missing_values(dataset_id):
     # Preprocessing with string "n/a"
@@ -26,31 +23,41 @@ def missing_values(dataset_id):
 
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
+    store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
 
-    # store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
+    # print(store[0].values())
+    db_data = []
+    keys = list(store[0].keys())
+    keys.pop(0)
+    keys.remove("DATASET_ID")
+    # print(keys)
+
+    dataset_id_val = store[0].get('DATASET_ID')
+    # print(dataset_id_val)
+    for item in store:
+        item.pop('DATASET_ID')
+        item.pop('_id')
+        values = list(item.values())
+        db_data.append(values)
+
+    # print(db_data)
+
+    df = pd.DataFrame(data=db_data)
+    df = df.replace("n/a", np.nan)
+
+    arr = df.values
+    # print(arr)
+    imp_mean = SimpleImputer(missing_values=np.nan, strategy='mean')
+    arr_new = imp_mean.fit_transform(arr)
+    # print(type(arr_new[0][0]))
+    # print(arr_new)
+    # print(len(keys))
+    # print(len((arr_new[0])))
+    documents = []
+    for element in arr_new:
+        for i in range(len(keys)):
+            documents.append({keys[i]: element[i]})
+    print(documents)
 
 
-
-    # # print(store[0].values())
-    # db_data = []
-    # keys = []
-    # for item in store:
-    #     item.pop('DATASET_ID')
-    #     item.pop('_id')
-    #     values = list(item.values())
-    #     db_data.append(values)
-    #
-    # # print(db_data)
-    #
-    # df = pd.DataFrame(data=db_data)
-    # df = df.replace("n/a", np.nan)
-    #
-    # arr = df.values
-    # # print(arr)
-    # imp_mean = SimpleImputer(missing_values=np.nan, strategy='mean')
-    # arr_new = imp_mean.fit_transform(arr)
-    # # print(type(arr_new[0][0]))
-    # # print(arr_new)
-
-
-# missing_values(dataset_id={"DATASET_ID": "6480818a2b02836f0686e027"})
+missing_values(dataset_id={"DATASET_ID": "6480818a2b02836f0686e027"})
