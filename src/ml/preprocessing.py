@@ -55,9 +55,13 @@ def missing_values(dataset_id):
     # print(len((arr_new[0])))
     documents = []
     for element in arr_new:
+        temp_dict = {}
         for i in range(len(keys)):
-            documents.append({keys[i]: element[i]})
-    print(documents)
+            temp_dict[keys[i]] = element[i]
+        documents.append(temp_dict)
+    mongo_db_function.delete_dataset(collection, dataset_id_val)
+    mongo_db_function.insert_dataset(collection, documents)
+    # print(documents)
 
 
 missing_values(dataset_id={"DATASET_ID": "6480818a2b02836f0686e027"})
