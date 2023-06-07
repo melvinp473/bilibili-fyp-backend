@@ -27,7 +27,13 @@ def missing_values(dataset_id):
 
     # print(store[0].values())
     db_data = []
-    keys = []
+    keys = list(store[0].keys())
+    keys.pop(0)
+    keys.remove("DATASET_ID")
+    # print(keys)
+
+    dataset_id_val = store[0].get('DATASET_ID')
+    # print(dataset_id_val)
     for item in store:
         item.pop('DATASET_ID')
         item.pop('_id')
@@ -45,6 +51,13 @@ def missing_values(dataset_id):
     arr_new = imp_mean.fit_transform(arr)
     # print(type(arr_new[0][0]))
     # print(arr_new)
+    # print(len(keys))
+    # print(len((arr_new[0])))
+    documents = []
+    for element in arr_new:
+        for i in range(len(keys)):
+            documents.append({keys[i]: element[i]})
+    print(documents)
 
 
-# missing_values(dataset_id={"DATASET_ID": "6480818a2b02836f0686e027"})
+missing_values(dataset_id={"DATASET_ID": "6480818a2b02836f0686e027"})
