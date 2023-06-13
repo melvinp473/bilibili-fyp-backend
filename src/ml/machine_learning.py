@@ -88,7 +88,8 @@ def decision_trees(path: str, selected_attributes: list):
     print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
     print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
     print("R2-score: %.4f" % r2_score(test_y, test_y_))
-    return_dict = {"Coefficients": regr.score(test_x, test_y)}
+
+
     r2 = metric_cal.metric_r2(test_y,test_y_)
     mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
     mean_squared = metric_cal.metric_mean_squared(test_y,test_y_)
@@ -97,7 +98,7 @@ def decision_trees(path: str, selected_attributes: list):
     media_absolute = metric_cal.metric_media_absolute(test_y,test_y_)
     max_error = metric_cal.metric_max_error(test_y,test_y_)
 
-    return_dict.update({"r2_score": r2})
+    return_dict = {"r2_score": r2}
     return_dict.update({"mae": mean_absolute})
     return_dict.update({"mse": mean_squared})
     return_dict.update({"mean_squared_log": mean_squared_log})
@@ -123,6 +124,7 @@ def kth_nearest_neighbors(path: str, selected_attributes: list):
     print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
     print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
     print("R2-score: %.4f" % r2_score(test_y, test_y_))
+
     return_dict = {"Coefficients": regr.score(test_x, test_y)}
     r2 = metric_cal.metric_r2(test_y,test_y_)
     mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
@@ -132,7 +134,7 @@ def kth_nearest_neighbors(path: str, selected_attributes: list):
     media_absolute = metric_cal.metric_media_absolute(test_y,test_y_)
     max_error = metric_cal.metric_max_error(test_y,test_y_)
 
-    return_dict.update({"r2_score": r2})
+    return_dict = {"r2_score": r2}
     return_dict.update({"mae": mean_absolute})
     return_dict.update({"mse": mean_squared})
     return_dict.update({"mean_squared_log": mean_squared_log})
