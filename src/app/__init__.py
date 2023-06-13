@@ -179,9 +179,10 @@ def create_app(debug=False):
         input = {"DATASET_ID": dataset_id}
 
         if preprocessing_code == 'mean imputation':
-            preprocessing.missing_values(input)
-
-        if preprocessing_code == 'standardization':
+            preprocessing.imputation(input, "mean")
+        elif preprocessing_code == 'median imputation':
+            preprocessing.imputation(input, "median")
+        elif preprocessing_code == 'standardization':
             preprocessing.standardization(input)
 
         response = "preprocessing done"
