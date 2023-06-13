@@ -70,6 +70,27 @@ def insert_dataset(collection: Collection, insert_data):
     collection.insert_many(insert_data)
     return
 
+def update_log(collection: Collection, new_log):
+    collection.insert_one(new_log)
+    return
+
+def get_run_id(collection: Collection):
+    pipeline = [
+        {
+            '$group': {
+                '_id': None,
+                'max_run_id': {'$max': '$run_id'}
+            }
+        }
+    ]
+
+    result = list(collection.aggregate(pipeline))
+    try:
+        max_run_id = result[0]['max_run_id']
+    except Exception as e:
+        max_run_id = 0
+    return max_run_id
+
 def list_to_csv(list: list):
 
     fields = list[0].keys()

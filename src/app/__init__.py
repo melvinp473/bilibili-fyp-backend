@@ -68,26 +68,40 @@ def create_app(debug=False):
         selected_attributes = request_json["selected_attributes"]
         algo = request_json["algo_type"]
 
-        # machine_learning.support_vector_machines(path,selected_attributes)
-        # machine_learning.kth_nearest_neighbors(path,selected_attributes)
 
-        # json_data = machine_learning.linear_regression(path,selected_attributes)
-        # response = json_data
-
-        # mongo_db_function.remove_file(path)
-
-        json_data = ""
+        return_dict = ""
 
         if algo == "knn":
-            json_data = machine_learning.kth_nearest_neighbors(path, selected_attributes)
+            return_dict = machine_learning.kth_nearest_neighbors(path, selected_attributes)
         elif algo == "decision trees":
-            json_data = machine_learning.decision_trees(path, selected_attributes)
+            return_dict = machine_learning.decision_trees(path, selected_attributes)
         elif algo == "svm":
-            json_data = machine_learning.support_vector_machines(path, selected_attributes)
+            return_dict = machine_learning.support_vector_machines(path, selected_attributes)
         elif algo == "linear regression":
-            json_data = machine_learning.linear_regression(path, selected_attributes)
+            return_dict = machine_learning.linear_regression(path, selected_attributes)
 
+        metric = return_dict
         mongo_db_function.remove_file(path)
+
+        log = mongo_db_function.get_collection(db, "Log")
+        run_id = mongo_db_function.get_run_id(log)
+
+        run_id += 1
+
+        data = {
+            "user_id": "user",
+            "algo_type": algo,
+            "tag": "from front-end",
+            "run_id" : run_id,
+            "metrics": metric
+        }
+
+
+
+        mongo_db_function.update_log(log,data)
+
+        return_dict = {'data': return_dict}
+        json_data = jsonify(return_dict)
 
         return json_data
 
