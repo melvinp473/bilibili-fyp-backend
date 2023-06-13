@@ -65,16 +65,17 @@ def create_app(debug=False):
         collection = mongo_db_function.get_collection(db, "Data")
         store = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
         path = mongo_db_function.list_to_csv(store)
-        selected_attributes = request_json["selected_attributes"]
-        algo = request_json["algo_type"]
 
+        algo = request_json["algo_type"]
+        selected_attributes = request_json["selected_attributes"]
+        additional_params = request_json["additional_params"]
 
         return_dict = ""
 
         if algo == "knn":
-            return_dict = machine_learning.kth_nearest_neighbors(path, selected_attributes)
+            return_dict = machine_learning.kth_nearest_neighbors(path, selected_attributes, additional_params)
         elif algo == "decision trees":
-            return_dict = machine_learning.decision_trees(path, selected_attributes)
+            return_dict = machine_learning.decision_trees(path, selected_attributes, additional_params)
         elif algo == "svm":
             return_dict = machine_learning.support_vector_machines(path, selected_attributes)
         elif algo == "linear regression":

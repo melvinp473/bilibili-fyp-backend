@@ -75,9 +75,11 @@ def support_vector_machines(path: str, selected_attributes: list):
     return return_dict
 
 
-def decision_trees(path: str, selected_attributes: list):
+def decision_trees(path: str, selected_attributes: list, additional_params: dict):
     df = pd.read_csv(path)
-    regr = tree.DecisionTreeRegressor()
+
+    max_depth = additional_params['max_depth']
+    regr = tree.DecisionTreeRegressor(max_depth=max_depth)
     x = df[selected_attributes]
     y = df[["STROKE"]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
@@ -111,9 +113,11 @@ def decision_trees(path: str, selected_attributes: list):
     return return_dict
 
 
-def kth_nearest_neighbors(path: str, selected_attributes: list):
+def kth_nearest_neighbors(path: str, selected_attributes: list, additional_params: dict):
     df = pd.read_csv(path)
-    regr = neighbors.KNeighborsRegressor(11)
+
+    n_neighbours = additional_params['neighbours_count']
+    regr = neighbors.KNeighborsRegressor(n_neighbours)
     x = df[selected_attributes]
     y = df[["STROKE"]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
