@@ -6,7 +6,7 @@ from sklearn import tree, neighbors
 import numpy as np
 from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from sklearn import svm
-
+from src.ml import metric_cal
 
 def linear_regression(path: str, selected_attributes: list):
     df = pd.read_csv(path)
@@ -17,19 +17,23 @@ def linear_regression(path: str, selected_attributes: list):
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
-    # print('Coefficients: ', regr.coef_)
-    # print('Intercept: ', regr.intercept_)
-    # print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
-    # print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
-    # print("Residual sum of squares (MSE): %.4f" % np.mean((test_y_ - test_y) ** 2))
-    # print("R2-score: %.4f" % r2_score(test_y, test_y_))
     return_dict = {"Coefficients": regr.coef_.tolist()[0], "Intercept": regr.intercept_.tolist()[0]}
-    return_dict.update({"mae": mean_absolute_error(test_y_, test_y)})
-    return_dict.update({"mse": mean_squared_error(test_y_, test_y)})
-    return_dict.update({"r2_score": r2_score(test_y, test_y_)})
-    return_dict = {'data': return_dict}
-    json_data = jsonify(return_dict)
-    return json_data
+    r2 = metric_cal.metric_r2(test_y,test_y_)
+    mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
+    mean_squared = metric_cal.metric_mean_squared(test_y,test_y_)
+    mean_squared_log = metric_cal.metric_mean_squared_log(test_y,test_y_)
+    mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y,test_y_)
+    media_absolute = metric_cal.metric_media_absolute(test_y,test_y_)
+    max_error = metric_cal.metric_max_error(test_y,test_y_)
+
+    return_dict.update({"r2_score": r2})
+    return_dict.update({"mae": mean_absolute})
+    return_dict.update({"mse": mean_squared})
+    return_dict.update({"mean_squared_log": mean_squared_log})
+    return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
+    return_dict.update({"media_absolute": media_absolute})
+    return_dict.update({"max_error": max_error})
+    return return_dict
 
 def support_vector_machines(path: str, selected_attributes: list):
     df = pd.read_csv(path)
@@ -41,8 +45,6 @@ def support_vector_machines(path: str, selected_attributes: list):
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
     test_y = test_y.to_numpy().ravel()
-    print(train_x)
-    print(train_y)
 
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
@@ -54,13 +56,24 @@ def support_vector_machines(path: str, selected_attributes: list):
     print("R2-score: %.4f" % r2_score(test_y, test_y_))
 
     return_dict = {"Coefficients": regr.coef_.tolist()[0], "Intercept": regr.intercept_.tolist()[0]}
-    return_dict.update({"mae": mean_absolute_error(test_y_, test_y)})
-    return_dict.update({"mse": mean_squared_error(test_y_, test_y)})
-    return_dict.update({"r2_score": r2_score(test_y, test_y_)})
-    return_dict = {'data': return_dict}
-    json_data = jsonify(return_dict)
+    r2 = metric_cal.metric_r2(test_y,test_y_)
+    mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
+    mean_squared = metric_cal.metric_mean_squared(test_y,test_y_)
+    mean_squared_log = metric_cal.metric_mean_squared_log(test_y,test_y_)
+    mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y,test_y_)
+    media_absolute = metric_cal.metric_media_absolute(test_y,test_y_)
+    max_error = metric_cal.metric_max_error(test_y,test_y_)
 
-    return json_data
+    return_dict.update({"r2_score": r2})
+    return_dict.update({"mae": mean_absolute})
+    return_dict.update({"mse": mean_squared})
+    return_dict.update({"mean_squared_log": mean_squared_log})
+    return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
+    return_dict.update({"media_absolute": media_absolute})
+    return_dict.update({"max_error": max_error})
+
+    return return_dict
+
 
 def decision_trees(path: str, selected_attributes: list):
     df = pd.read_csv(path)
@@ -68,26 +81,33 @@ def decision_trees(path: str, selected_attributes: list):
     x = df[selected_attributes]
     y = df[["STROKE"]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
-    # test_x = test_x.to_numpy().ravel()
-    # train_x = train_x.to_numpy().ravel()
-    # test_y = test_y.to_numpy().ravel()
-    # train_y = train_y.to_numpy().ravel()
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
     print('Coefficients: ', regr.score(test_x, test_y))
-    # print('Intercept: ', regr.intercept_)
     print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
     print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
-    # print("Residual sum of squares (MSE): %.4f" % np.mean((test_y_ - test_y) ** 2))
     print("R2-score: %.4f" % r2_score(test_y, test_y_))
     return_dict = {"Coefficients": regr.score(test_x, test_y)}
-    return_dict.update({"mae": mean_absolute_error(test_y_, test_y)})
-    return_dict.update({"mse": mean_squared_error(test_y_, test_y)})
-    return_dict.update({"r2_score": r2_score(test_y, test_y_)})
-    return_dict = {'data': return_dict}
-    json_data = jsonify(return_dict)
-    return json_data
+    r2 = metric_cal.metric_r2(test_y,test_y_)
+    mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
+    mean_squared = metric_cal.metric_mean_squared(test_y,test_y_)
+    mean_squared_log = metric_cal.metric_mean_squared_log(test_y,test_y_)
+    mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y,test_y_)
+    media_absolute = metric_cal.metric_media_absolute(test_y,test_y_)
+    max_error = metric_cal.metric_max_error(test_y,test_y_)
+
+    return_dict.update({"r2_score": r2})
+    return_dict.update({"mae": mean_absolute})
+    return_dict.update({"mse": mean_squared})
+    return_dict.update({"mean_squared_log": mean_squared_log})
+    return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
+    return_dict.update({"media_absolute": media_absolute})
+    return_dict.update({"max_error": max_error})
+
+
+
+    return return_dict
 
 
 def kth_nearest_neighbors(path: str, selected_attributes: list):
@@ -100,16 +120,25 @@ def kth_nearest_neighbors(path: str, selected_attributes: list):
     test_y_ = regr.predict(test_x)
 
     print('Coefficients: ', regr.score(test_x, test_y))
-    # print('Intercept: ', regr.intercept_)
     print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
     print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
-    # print("Residual sum of squares (MSE): %.4f" % np.mean((test_y_ - test_y) ** 2))
     print("R2-score: %.4f" % r2_score(test_y, test_y_))
     return_dict = {"Coefficients": regr.score(test_x, test_y)}
-    return_dict.update({"mae": mean_absolute_error(test_y_, test_y)})
-    return_dict.update({"mse": mean_squared_error(test_y_, test_y)})
-    return_dict.update({"r2_score": r2_score(test_y, test_y_)})
-    return_dict = {'data': return_dict}
-    json_data = jsonify(return_dict)
-    return json_data
+    r2 = metric_cal.metric_r2(test_y,test_y_)
+    mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
+    mean_squared = metric_cal.metric_mean_squared(test_y,test_y_)
+    mean_squared_log = metric_cal.metric_mean_squared_log(test_y,test_y_)
+    mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y,test_y_)
+    media_absolute = metric_cal.metric_media_absolute(test_y,test_y_)
+    max_error = metric_cal.metric_max_error(test_y,test_y_)
+
+    return_dict.update({"r2_score": r2})
+    return_dict.update({"mae": mean_absolute})
+    return_dict.update({"mse": mean_squared})
+    return_dict.update({"mean_squared_log": mean_squared_log})
+    return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
+    return_dict.update({"media_absolute": media_absolute})
+    return_dict.update({"max_error": max_error})
+
+    return return_dict
 
