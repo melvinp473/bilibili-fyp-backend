@@ -1,4 +1,5 @@
 import json
+from io import BytesIO
 
 from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from flask_cors import CORS
@@ -8,6 +9,8 @@ from ..ml import machine_learning, preprocessing
 import csv
 from datetime import datetime
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 import sklearn.linear_model as linear_model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
@@ -169,6 +172,48 @@ def create_app(debug=False):
         response = "preprocessing done"
         return response
 
+    @application.route('/analysis', methods=['POST'])
+    def run_analysis():
+        request_json = request.get_json()
 
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
+        data = mongo_db_function.get_by_query(collection, {'DATASET_ID': '648145486bec4bd7467ef583'}, 'DATASET_ID')
+        # file_path = mongo_db_function.list_to_csv(data)
+
+        # Create DataFrame
+        df = pd.DataFrame(data)
+        selected_attributes = ['CODE', 'SMOKING', 'OBESITY', 'DRINKING', 'LACK_FRUIT', 'LACK_EXERCISE', 'AGE65_OVER',
+                               'AGE25_44', 'EARLY_SCHOOL_LEAVERS', 'LOW_INCOME_HOUSEHOLD', 'HCC_HOLDER', 'UNEMPLOYMENT',
+                               'RAC_PLACE', 'CLIENTS_WITH_CARER', 'TOTAL_CLIENTS', 'DIABETES', 'MENTAL_DISEASE',
+                               'PSYCHOLOGICAL_DISTRESS', 'HYPERTENSION', 'AIR_ POLLUTANTS']
+        x = df[selected_attributes]
+
+        # Create your plot using Matplotlib or Seaborn
+        fig, ax = plt.subplots(figsize=(11, 11))  # Set the desired figure size
+
+        # Plot the correlation matrix as a heatmap
+        sns.heatmap(x.corr(), annot=True, fmt=".2f", cmap='coolwarm', )
+
+        # Set the title
+        plt.title('Correlation Matrix')
+        plt.xticks(rotation=30, ha='right')
+        plt.tight_layout()
+
+        # mongo_db_function.remove_file(file_path)
+
+        # Save the plot image to a BytesIO buffer
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+
+        # # Show the plot
+        # plt.show()
+
+        # Set the appropriate content type
+        response = make_response(buffer.getvalue())
+        response.headers['Content-Type'] = 'image/png'
+
+        return response
 
     return application
