@@ -125,7 +125,6 @@ def kth_nearest_neighbors(path: str, selected_attributes: list):
     print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
     print("R2-score: %.4f" % r2_score(test_y, test_y_))
 
-    return_dict = {"Coefficients": regr.score(test_x, test_y)}
     r2 = metric_cal.metric_r2(test_y,test_y_)
     mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
     mean_squared = metric_cal.metric_mean_squared(test_y,test_y_)
