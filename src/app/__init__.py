@@ -186,8 +186,10 @@ def create_app(debug=False):
         elif preprocessing_code == 'standardization':
             try:
                 preprocessing.standardization(input)
-            except ValueError:
-                response = "fail"
+            except ValueError as e:
+                print(e)
+                response = e
+
         return response
 
     @application.route('/analysis', methods=['POST'])
