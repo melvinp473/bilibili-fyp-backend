@@ -58,6 +58,18 @@ def create_app(debug=False):
         response = jsonify(r_data)
         return response
 
+    @application.route('/get-data', methods=['POST'])
+    def get_data():
+        # by jiahao: not used for now, just thinking if we should show the data or not
+        request_json = request.get_json()
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
+        list = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
+        r_data = {'data': list}
+        print(r_data)
+        response = jsonify(r_data)
+        return response
+
     @application.route('/machine-learning', methods=['POST'])
     def run_machineLearning():
         request_json = request.get_json()
@@ -105,18 +117,6 @@ def create_app(debug=False):
         json_data = jsonify(return_dict)
 
         return json_data
-
-    @application.route('/get-data', methods=['POST'])
-    def get_data():
-        # by jiahao: not used for now, just thinking if we should show the data or not
-        request_json = request.get_json()
-        db = mongo_db_function.get_database('FIT4701')
-        collection = mongo_db_function.get_collection(db, "Data")
-        list = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
-        r_data = {'data': list}
-        print(r_data)
-        response = jsonify(r_data)
-        return response
 
     @application.route('/upload-dataset', methods=['POST'])
     def upload_dataset():
