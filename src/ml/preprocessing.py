@@ -58,7 +58,6 @@ def standardization(dataset_id):
         values = list(item.values())
         db_data.append(values)
     df = pd.DataFrame(data=db_data)
-    df = df.replace("n/a", np.nan)
     arr = df.values
 
     scaler = preprocessing.StandardScaler().fit(arr)

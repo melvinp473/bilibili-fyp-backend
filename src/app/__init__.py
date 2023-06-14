@@ -178,14 +178,16 @@ def create_app(debug=False):
         print(dataset_id)
         input = {"DATASET_ID": dataset_id}
 
+        response = "preprocessing done"
         if preprocessing_code == 'mean imputation':
             preprocessing.imputation(input, "mean")
         elif preprocessing_code == 'median imputation':
             preprocessing.imputation(input, "median")
         elif preprocessing_code == 'standardization':
-            preprocessing.standardization(input)
-
-        response = "preprocessing done"
+            try:
+                preprocessing.standardization(input)
+            except ValueError:
+                response = "fail"
         return response
 
     @application.route('/analysis', methods=['POST'])
@@ -230,6 +232,14 @@ def create_app(debug=False):
         response = make_response(buffer.getvalue())
         response.headers['Content-Type'] = 'image/png'
 
+        return response
+
+    @application.route('/log-plot', methods=['POST'])
+    def get_user_log():
+        request_json = request.get_json()
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Log")
+        response = mongo_db_function.get_by_query(collection,request_json,'user_id')
         return response
 
     return application

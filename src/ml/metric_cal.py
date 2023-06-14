@@ -11,7 +11,11 @@ def metric_mean_squared(y_true,y_pred):
     return mean_squared_error(y_true,y_pred)
 
 def metric_mean_squared_log(y_true,y_pred):
-    return mean_squared_log_error(y_true,y_pred)
+    try:
+        value = mean_squared_log_error(y_true, y_pred)
+    except ValueError:
+        value = 'n/a'
+    return value
 
 def metric_mean_absolute_percentage(y_true,y_pred):
     return mean_absolute_percentage_error(y_true, y_pred)
