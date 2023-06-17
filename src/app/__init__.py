@@ -183,6 +183,8 @@ def create_app(debug=False):
             preprocessing.imputation(input, "mean")
         elif preprocessing_code == 'median imputation':
             preprocessing.imputation(input, "median")
+        elif preprocessing_code == 'label':
+            preprocessing.label(input)
         elif preprocessing_code == 'standardization':
             try:
                 preprocessing.standardization(input)
