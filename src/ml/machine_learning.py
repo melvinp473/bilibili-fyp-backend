@@ -3,6 +3,9 @@ import sklearn.linear_model as linear_model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 from sklearn import tree, neighbors
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import VotingRegressor
 import numpy as np
 from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from sklearn import svm
@@ -125,6 +128,50 @@ def kth_nearest_neighbors(path: str, selected_attributes: list, additional_param
     test_y_ = regr.predict(test_x)
 
     print('Coefficients: ', regr.score(test_x, test_y))
+    print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
+    print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
+    print("R2-score: %.4f" % r2_score(test_y, test_y_))
+
+    r2 = metric_cal.metric_r2(test_y,test_y_)
+    mean_absolute = metric_cal.metric_mean_absolute(test_y,test_y_)
+    mean_squared = metric_cal.metric_mean_squared(test_y,test_y_)
+    mean_squared_log = metric_cal.metric_mean_squared_log(test_y,test_y_)
+    mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y,test_y_)
+    media_absolute = metric_cal.metric_media_absolute(test_y,test_y_)
+    max_error = metric_cal.metric_max_error(test_y,test_y_)
+
+    return_dict = {"r2_score": r2}
+    return_dict.update({"mae": mean_absolute})
+    return_dict.update({"mse": mean_squared})
+    return_dict.update({"mean_squared_log": mean_squared_log})
+    return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
+    return_dict.update({"media_absolute": media_absolute})
+    return_dict.update({"max_error": max_error})
+
+    return return_dict
+
+
+"the regression method can add more, this is only the test type"
+def voting_regressor(path: str, selected_attributes: list):
+    df = pd.read_csv(path)
+
+
+    x = df[selected_attributes]
+    y = df[["STROKE"]]
+    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x = train_x.to_numpy()
+    test_x = test_x.to_numpy()
+    train_y = train_y.to_numpy().ravel()
+    test_y = test_y.to_numpy().ravel()
+
+    reg1 = GradientBoostingRegressor(random_state=1)
+    reg2 = RandomForestRegressor(random_state=1)
+    reg3 = linear_model.LinearRegression()
+    ereg = VotingRegressor(estimators=[('gb', reg1), ('rf', reg2), ('lr', reg3)])
+    ereg = ereg.fit(train_x, train_y)
+    test_y_ = ereg.predict(test_x)
+
+    print('Coefficients: ', ereg.score(test_x, test_y))
     print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
     print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
     print("R2-score: %.4f" % r2_score(test_y, test_y_))

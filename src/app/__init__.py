@@ -92,6 +92,8 @@ def create_app(debug=False):
             return_dict = machine_learning.support_vector_machines(path, selected_attributes)
         elif algo == "linear regression":
             return_dict = machine_learning.linear_regression(path, selected_attributes)
+            "test here"
+            # return_dict = machine_learning.voting_regressor(path, selected_attributes)
 
         metric = return_dict
         mongo_db_function.remove_file(path)
