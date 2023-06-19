@@ -251,4 +251,15 @@ def create_app(debug=False):
         response = jsonify(r_data)
         return response
 
+    @application.route('/get-results', methods=['POST'])
+    def get_results():
+        request_json = request.get_json()
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Log")
+        list = mongo_db_function.get_by_query(collection, request_json, "user_id")
+        r_data = {'data': list}
+        print(r_data)
+        response = jsonify(r_data)
+        return response
+
     return application
