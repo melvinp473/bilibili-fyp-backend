@@ -104,10 +104,10 @@ def create_app(debug=False):
         run_id += 1
 
         data = {
-            "user_id": "user",
+            "user_id": request_json["user_id"],
             "algo_type": algo,
-            "tag": "from front-end",
-            "run_id" : run_id,
+            "run_name": request_json["result_logging"]["runName"],
+            "run_id": run_id,
             "metrics": metric
         }
 
