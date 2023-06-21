@@ -108,7 +108,8 @@ def create_app(debug=False):
             "algo_type": algo,
             "run_name": request_json["result_logging"]["runName"],
             "run_id": run_id,
-            "metrics": metric
+            "metrics": metric,
+            "create_date": datetime.now(),
         }
 
 
@@ -185,7 +186,7 @@ def create_app(debug=False):
             preprocessing.imputation(input, "mean")
         elif preprocessing_code == 'median imputation':
             preprocessing.imputation(input, "median")
-        elif preprocessing_code == 'label':
+        elif preprocessing_code == 'label encoding':
             preprocessing.label(input)
         elif preprocessing_code == 'standardization':
             try:
