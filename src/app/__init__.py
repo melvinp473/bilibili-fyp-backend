@@ -130,7 +130,7 @@ def create_app(debug=False):
             reader = csv.reader(csvfile)
 
             columns = next(reader)
-            attr_col = columns[:-1]
+            attr_col = columns
             print(columns)
 
             for column in columns:
