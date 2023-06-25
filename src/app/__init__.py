@@ -1,6 +1,7 @@
 import json
 from io import BytesIO
 
+from bson import ObjectId
 from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from flask_cors import CORS
 from ..db import mongo_db, mongo_db_function
@@ -24,7 +25,7 @@ def create_app(debug=False):
 
     application = Flask(__name__)
     application.debug = debug
-    CORS(application, origins='http://localhost:4200', headers=['Content-Type'], methods=['POST'])
+    CORS(application, origins='http://localhost:4200', headers=['Content-Type'], methods=['POST', 'DELETE'])
 
     @application.route("/", methods=['GET'])
     def home():
@@ -251,5 +252,15 @@ def create_app(debug=False):
         print(r_data)
         response = jsonify(r_data)
         return response
+
+    @application.route('/results', methods=['DELETE'])
+    def delete_results():
+        request_json = request.get_json()
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Log")
+        ids_to_delete = [ObjectId(doc_id) for doc_id in request_json["doc_ids"]]
+        result = collection.delete_many({'_id': {'$in': ids_to_delete}})
+
+        return jsonify({'message': f'{result.deleted_count} documents deleted'})
 
     return application
