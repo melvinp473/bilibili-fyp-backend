@@ -72,7 +72,7 @@ def create_app(debug=False):
         return response
 
     @application.route('/machine-learning', methods=['POST'])
-    def run_machineLearning():
+    def run_machine_learning():
         request_json = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
@@ -80,21 +80,22 @@ def create_app(debug=False):
         path = mongo_db_function.list_to_csv(store)
 
         algo = request_json["algo_type"]
-        selected_attributes = request_json["selected_attributes"]
+        independent_variables = request_json["independent_variables"]
+        target_variable = request_json["target_variable"]
         additional_params = request_json["additional_params"]
 
         return_dict = ""
 
         if algo == "knn":
-            return_dict = machine_learning.kth_nearest_neighbors(path, selected_attributes, additional_params)
+            return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables, additional_params)
         elif algo == "decision trees":
-            return_dict = machine_learning.decision_trees(path, selected_attributes, additional_params)
+            return_dict = machine_learning.decision_trees(path, target_variable, independent_variables, additional_params)
         elif algo == "svm":
-            return_dict = machine_learning.support_vector_machines(path, selected_attributes)
+            return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
         elif algo == "linear regression":
-            return_dict = machine_learning.linear_regression(path, selected_attributes)
+            return_dict = machine_learning.linear_regression(path, target_variable, independent_variables)
         elif algo == "ensemble":
-            return_dict = machine_learning.voting_regressor(path, selected_attributes)
+            return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables)
 
         metric = return_dict
         mongo_db_function.remove_file(path)
@@ -112,8 +113,6 @@ def create_app(debug=False):
             "metrics": metric,
             "create_date": datetime.now(),
         }
-
-
 
         mongo_db_function.update_log(log,data)
 

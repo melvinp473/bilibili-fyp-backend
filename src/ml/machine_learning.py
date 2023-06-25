@@ -11,11 +11,11 @@ from flask import Flask, Response, request, Blueprint, make_response, jsonify
 from sklearn import svm
 from src.ml import metric_cal
 
-def linear_regression(path: str, selected_attributes: list):
+def linear_regression(path: str, target_variable: str, independent_variables: list):
     df = pd.read_csv(path)
     regr = linear_model.LinearRegression()
-    x = df[selected_attributes]
-    y = df[["STROKE"]]
+    x = df[independent_variables]
+    y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
@@ -38,10 +38,10 @@ def linear_regression(path: str, selected_attributes: list):
     return_dict.update({"max_error": max_error})
     return return_dict
 
-def support_vector_machines(path: str, selected_attributes: list):
+def support_vector_machines(path: str, target_variable: str, independent_variables: list):
     df = pd.read_csv(path)
-    x = df[selected_attributes]
-    y = df[["STROKE"]]
+    x = df[independent_variables]
+    y = df[[target_variable]]
     regr = svm.SVR(kernel="linear", C=100, gamma="auto")
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
     train_x = train_x.to_numpy()
@@ -78,13 +78,13 @@ def support_vector_machines(path: str, selected_attributes: list):
     return return_dict
 
 
-def decision_trees(path: str, selected_attributes: list, additional_params: dict):
+def decision_trees(path: str, target_variable: str, independent_variables: list, additional_params: dict):
     df = pd.read_csv(path)
 
     max_depth = additional_params['max_depth']
     regr = tree.DecisionTreeRegressor(max_depth=max_depth)
-    x = df[selected_attributes]
-    y = df[["STROKE"]]
+    x = df[independent_variables]
+    y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
@@ -116,13 +116,13 @@ def decision_trees(path: str, selected_attributes: list, additional_params: dict
     return return_dict
 
 
-def kth_nearest_neighbors(path: str, selected_attributes: list, additional_params: dict):
+def kth_nearest_neighbors(path: str, target_variable: str, independent_variables: list, additional_params: dict):
     df = pd.read_csv(path)
 
     n_neighbours = additional_params['neighbours_count']
     regr = neighbors.KNeighborsRegressor(n_neighbours)
-    x = df[selected_attributes]
-    y = df[["STROKE"]]
+    x = df[independent_variables]
+    y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
@@ -152,12 +152,12 @@ def kth_nearest_neighbors(path: str, selected_attributes: list, additional_param
 
 
 "the regression method can add more, this is only the test type"
-def voting_regressor(path: str, selected_attributes: list):
+def voting_regressor(path: str, target_variable: str, independent_variables: list):
     df = pd.read_csv(path)
 
 
-    x = df[selected_attributes]
-    y = df[["STROKE"]]
+    x = df[independent_variables]
+    y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
