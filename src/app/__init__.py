@@ -200,19 +200,17 @@ def create_app(debug=False):
     @application.route('/analysis', methods=['POST'])
     def run_analysis():
         request_json = request.get_json()
+        dataset_id = request_json['DATASET_ID']
 
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
-        data = mongo_db_function.get_by_query(collection, {'DATASET_ID': '648145486bec4bd7467ef583'}, 'DATASET_ID')
+        data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
         # file_path = mongo_db_function.list_to_csv(data)
 
         # Create DataFrame
         df = pd.DataFrame(data)
-        selected_attributes = ['CODE', 'SMOKING', 'OBESITY', 'DRINKING', 'LACK_FRUIT', 'LACK_EXERCISE', 'AGE65_OVER',
-                               'AGE25_44', 'EARLY_SCHOOL_LEAVERS', 'LOW_INCOME_HOUSEHOLD', 'HCC_HOLDER', 'UNEMPLOYMENT',
-                               'RAC_PLACE', 'CLIENTS_WITH_CARER', 'TOTAL_CLIENTS', 'DIABETES', 'MENTAL_DISEASE',
-                               'PSYCHOLOGICAL_DISTRESS', 'HYPERTENSION', 'AIR_ POLLUTANTS']
-        x = df[selected_attributes]
+        attributes = db["Dataset"].find_one({"_id": ObjectId(dataset_id)})["attributes"]
+        x = df[attributes]
 
         # Create your plot using Matplotlib or Seaborn
         fig, ax = plt.subplots(figsize=(11, 11))  # Set the desired figure size
