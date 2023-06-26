@@ -181,7 +181,7 @@ def create_app(debug=False):
         print(dataset_id)
         input = {"DATASET_ID": dataset_id}
 
-        response = "preprocessing done"
+        response = True
         if preprocessing_code == 'mean imputation':
             preprocessing.imputation(input, "mean")
         elif preprocessing_code == 'median imputation':
@@ -193,7 +193,16 @@ def create_app(debug=False):
                 preprocessing.standardization(input)
             except ValueError as e:
                 print(e)
-                response = e
+                response = False
+
+            # db = mongo_db_function.get_database('FIT4701')
+            # collection = mongo_db_function.get_collection(db, "Data")
+            # list = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
+            # r_data = {'data': list}
+            # print(r_data)
+            # response = jsonify(r_data)
+            response = {'response': response}
+            response = jsonify(response)
 
         return response
 
