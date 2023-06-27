@@ -87,9 +87,11 @@ def create_app(debug=False):
         return_dict = ""
 
         if algo == "knn":
-            return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables, additional_params)
+            return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables,
+                                                                 additional_params)
         elif algo == "decision trees":
-            return_dict = machine_learning.decision_trees(path, target_variable, independent_variables, additional_params)
+            return_dict = machine_learning.decision_trees(path, target_variable, independent_variables,
+                                                          additional_params)
         elif algo == "svm":
             return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
         elif algo == "linear regression":
@@ -114,7 +116,7 @@ def create_app(debug=False):
             "create_date": datetime.now(),
         }
 
-        mongo_db_function.update_log(log,data)
+        mongo_db_function.update_log(log, data)
 
         return_dict = {'data': return_dict}
         json_data = jsonify(return_dict)
@@ -188,6 +190,11 @@ def create_app(debug=False):
             preprocessing.imputation(input, "median")
         elif preprocessing_code == 'label encoding':
             preprocessing.label(input)
+        elif preprocessing_code == 'feature selection':
+            k = request_json['k']
+            regression_type = request_json['k']
+            target_attribute = request_json['k']
+            attributes = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
         elif preprocessing_code == 'standardization':
             try:
                 preprocessing.standardization(input)
@@ -201,8 +208,8 @@ def create_app(debug=False):
             # r_data = {'data': list}
             # print(r_data)
             # response = jsonify(r_data)
-            response = {'response': response}
-            response = jsonify(response)
+        response = {'response': response}
+        response = jsonify(response)
 
         return response
 
@@ -268,5 +275,16 @@ def create_app(debug=False):
         result = collection.delete_many({'_id': {'$in': ids_to_delete}})
 
         return jsonify({'message': f'{result.deleted_count} documents deleted'})
+
+    # @application.route('/feature-selection', methods=['POST'])
+    # def feature_selection():
+    #     request_json = request.get_json()
+    #     dataset_id = request_json['DATASET_ID']
+    #     k = request_json['k']
+    #     regression_type = request_json['k']
+    #     target_attribute = request_json['k']
+    #
+    #     response = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
+    #     return jsonify({'attributes': response})
 
     return application

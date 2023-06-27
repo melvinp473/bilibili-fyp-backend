@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.impute import SimpleImputer
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import mutual_info_regression, r_regression, f_regression
 
 from src.db import mongo_db_function
 
@@ -76,6 +78,7 @@ def standardization(dataset_id):
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     mongo_db_function.insert_dataset(collection, documents)
 
+
 def label(dataset_id):
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
@@ -114,5 +117,37 @@ def label(dataset_id):
     mongo_db_function.insert_dataset(collection, documents)
 
 
+def k_selection(dataset_id, k, regression_type, target_attribute):
+    db = mongo_db_function.get_database('FIT4701')
+    collection = mongo_db_function.get_collection(db, "Data")
+    input_ = {"DATASET_ID": dataset_id}
+    store = mongo_db_function.get_by_query(collection, input_, "DATASET_ID")
+
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+    # print(df)
+    x = df.drop(target_attribute, axis=1)
+    y = df[target_attribute]
+
+    ret_arr = []
+    if regression_type == "mutual_info_regression":
+        selector = SelectKBest(mutual_info_regression, k=k)
+        selector.fit(x, y)
+        selection = x.columns[selector.get_support()]
+        return selection.array.tolist()
+
+    elif regression_type == "r_regression":
+        selector = SelectKBest(r_regression, k=k)
+        selector.fit(x, y)
+        selection = x.columns[selector.get_support()]
+        return selection.array.tolist()
+
+    elif regression_type == "f_regression":
+        selector = SelectKBest(f_regression, k=k)
+        selector.fit(x, y)
+        selection = x.columns[selector.get_support()]
+        return selection.array.tolist()
 
 # label({"DATASET_ID": "6489def06240641623711ca0"})
+# print(k_selection("6491a29f8ec5697220711e44", 5, "f_regression", "STROKE"))
