@@ -197,8 +197,8 @@ def create_app(debug=False):
             preprocessing.label(input)
         elif preprocessing_code == 'feature selection':
             k = request_json['k']
-            regression_type = request_json['k']
-            target_attribute = request_json['k']
+            regression_type = request_json['regression_type']
+            target_attribute = request_json['target_attribute']
             body = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
         elif preprocessing_code == 'standardization':
             try:
