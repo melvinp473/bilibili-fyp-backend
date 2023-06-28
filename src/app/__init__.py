@@ -171,9 +171,13 @@ def create_app(debug=False):
         insert_result = collection.insert_many(data_rows)
         if insert_result.acknowledged:
             response = "successfully uploaded " + f.filename
+            flag = True
         else:
             response = "Error when inserting data to database"
-        return response
+            flag = False
+        return jsonify({'response': response,
+                        'flag': flag
+                        })
 
     @application.route('/preprocessing', methods=['POST'])
     def do_preprocessing():
@@ -183,7 +187,8 @@ def create_app(debug=False):
         print(dataset_id)
         input = {"DATASET_ID": dataset_id}
 
-        response = True
+        flag = True
+        body = []
         if preprocessing_code == 'mean imputation':
             preprocessing.imputation(input, "mean")
         elif preprocessing_code == 'median imputation':
@@ -194,13 +199,13 @@ def create_app(debug=False):
             k = request_json['k']
             regression_type = request_json['k']
             target_attribute = request_json['k']
-            attributes = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
+            body = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
         elif preprocessing_code == 'standardization':
             try:
                 preprocessing.standardization(input)
             except ValueError as e:
                 print(e)
-                response = False
+                flag = False
 
             # db = mongo_db_function.get_database('FIT4701')
             # collection = mongo_db_function.get_collection(db, "Data")
@@ -208,7 +213,8 @@ def create_app(debug=False):
             # r_data = {'data': list}
             # print(r_data)
             # response = jsonify(r_data)
-        response = {'response': response}
+        response = {'flag': flag,
+                    'body': body}
         response = jsonify(response)
 
         return response
