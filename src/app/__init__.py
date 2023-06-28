@@ -282,6 +282,24 @@ def create_app(debug=False):
 
         return jsonify({'message': f'{result.deleted_count} documents deleted'})
 
+    @application.route('/dataset/<string:dataset_id>', methods=['DELETE'])
+    def delete_dataset(dataset_id):
+
+        # delete dataset
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Dataset")
+        delete_dataset_result = collection.delete_one({'_id': ObjectId(dataset_id)})
+
+        # delete data
+        print(dataset_id)
+        collection = mongo_db_function.get_collection(db, "Data")
+        delete_data_result = collection.delete_many({'DATASET_ID': dataset_id})
+
+        return jsonify({
+            'dataset_removal_success': f'{delete_dataset_result.acknowledged}',
+            'data_rows_removed': f'{delete_data_result.deleted_count}',
+        })
+
     # @application.route('/feature-selection', methods=['POST'])
     # def feature_selection():
     #     request_json = request.get_json()
