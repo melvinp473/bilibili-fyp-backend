@@ -10,6 +10,9 @@ def metric_mean_absolute(y_true,y_pred):
 def metric_mean_squared(y_true,y_pred):
     return mean_squared_error(y_true,y_pred)
 
+def metric_root_mean_squared(y_true,y_pred):
+    return mean_squared_error(y_true,y_pred, squared=False)
+
 def metric_mean_squared_log(y_true,y_pred):
     try:
         value = mean_squared_log_error(y_true, y_pred)
