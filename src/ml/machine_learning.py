@@ -82,11 +82,10 @@ def support_vector_machines(path: str, target_variable: str, independent_variabl
     return return_dict
 
 
-def decision_trees(path: str, target_variable: str, independent_variables: list, additional_params: dict):
+def decision_trees(path: str, target_variable: str, independent_variables: list, algo_params: dict):
     df = pd.read_csv(path)
 
-    max_depth = additional_params['max_depth']
-    regr = tree.DecisionTreeRegressor(max_depth=max_depth)
+    regr = tree.DecisionTreeRegressor(**algo_params)
     x = df[independent_variables]
     y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
@@ -122,11 +121,10 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     return return_dict
 
 
-def kth_nearest_neighbors(path: str, target_variable: str, independent_variables: list, additional_params: dict):
+def kth_nearest_neighbors(path: str, target_variable: str, independent_variables: list, algo_params: dict):
     df = pd.read_csv(path)
 
-    n_neighbours = additional_params['neighbours_count']
-    regr = neighbors.KNeighborsRegressor(n_neighbours)
+    regr = neighbors.KNeighborsRegressor(**algo_params)
     x = df[independent_variables]
     y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)

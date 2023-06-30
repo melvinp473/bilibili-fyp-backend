@@ -82,16 +82,16 @@ def create_app(debug=False):
         algo = request_json["algo_type"]
         independent_variables = request_json["independent_variables"]
         target_variable = request_json["target_variable"]
-        additional_params = request_json["additional_params"]
+        algo_params = {key: value for key, value in request_json["algo_params"].items() if value is not None and value != ''}
 
         return_dict = ""
 
         if algo == "knn":
             return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables,
-                                                                 additional_params)
+                                                                 algo_params)
         elif algo == "decision trees":
             return_dict = machine_learning.decision_trees(path, target_variable, independent_variables,
-                                                          additional_params)
+                                                          algo_params)
         elif algo == "svm":
             return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
         elif algo == "linear regression":
