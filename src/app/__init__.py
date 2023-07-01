@@ -1,23 +1,16 @@
-import json
-from io import BytesIO
-
-from bson import ObjectId
-from flask import Flask, Response, request, Blueprint, make_response, jsonify
-from flask_cors import CORS
-from ..db import mongo_db, mongo_db_function
-from ..ml import machine_learning, preprocessing
-
 import csv
 from datetime import datetime
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import sklearn.linear_model as linear_model
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
-import numpy as np
+from io import BytesIO
 
-import os
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from bson import ObjectId
+from flask import Flask, request, make_response, jsonify
+from flask_cors import CORS
+
+from ..db import mongo_db_function
+from ..ml import machine_learning, preprocessing
 
 
 def create_app(debug=False):
@@ -86,17 +79,17 @@ def create_app(debug=False):
 
         return_dict = ""
 
-        if algo == "knn":
-            return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables,
-                                                                 algo_params)
-        elif algo == "decision trees":
-            return_dict = machine_learning.decision_trees(path, target_variable, independent_variables,
-                                                          algo_params)
-        elif algo == "svm":
-            return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
-        elif algo == "linear regression":
+        if algo == "linear_regr":
             return_dict = machine_learning.linear_regression(path, target_variable, independent_variables)
-        elif algo == "ensemble":
+        elif algo == "decision_trees_regr":
+            return_dict = machine_learning.decision_trees(path, target_variable, independent_variables, algo_params)
+        elif algo == "svm_regr":
+            return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
+        elif algo == "knn_regr":
+            return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables, algo_params)
+        elif algo == "random_forest_regr":
+            return_dict = machine_learning.random_forest(path, target_variable, independent_variables, algo_params)
+        elif algo == "voting_regr":
             return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables)
 
         metric = return_dict
