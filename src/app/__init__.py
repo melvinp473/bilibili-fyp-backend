@@ -89,6 +89,8 @@ def create_app(debug=False):
             return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables, algo_params)
         elif algo == "random_forest_regr":
             return_dict = machine_learning.random_forest(path, target_variable, independent_variables, algo_params)
+        elif algo == "bagging_regr":
+            return_dict = machine_learning.bagging_regr(path, target_variable, independent_variables, algo_params)
         elif algo == "voting_regr":
             return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables)
 
