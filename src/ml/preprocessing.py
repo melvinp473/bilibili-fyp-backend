@@ -78,6 +78,42 @@ def standardization(dataset_id):
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     mongo_db_function.insert_dataset(collection, documents)
 
+def normalization(dataset_id):
+    db = mongo_db_function.get_database('FIT4701')
+    collection = mongo_db_function.get_collection(db, "Data")
+    store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
+    db_data = []
+    keys = list(store[0].keys())
+    keys.pop(0)
+    keys.remove("DATASET_ID")
+    keys.remove('CODE')
+    dataset_id_val = store[0].get('DATASET_ID')
+    for item in store:
+        item.pop('DATASET_ID')
+        item.pop('_id')
+        item.pop('CODE')
+        values = list(item.values())
+        db_data.append(values)
+    df = pd.DataFrame(data=db_data)
+    x = df.values
+
+    scaler = preprocessing.MinMaxScaler()
+    scaler.fit(x)
+    x_processed = scaler.transform(x)
+
+    documents = []
+    code = 1
+    for element in x_processed:
+        temp_dict = {}
+        for i in range(len(keys)):
+            temp_dict[keys[i]] = element[i]
+        temp_dict['DATASET_ID'] = dataset_id_val
+        temp_dict['CODE'] = code
+        code = code + 1
+        documents.append(temp_dict)
+    mongo_db_function.delete_dataset(collection, dataset_id_val)
+    mongo_db_function.insert_dataset(collection, documents)
+
 
 def label(dataset_id):
     db = mongo_db_function.get_database('FIT4701')

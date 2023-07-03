@@ -54,13 +54,11 @@ def create_app(debug=False):
 
     @application.route('/get-data', methods=['POST'])
     def get_data():
-        # by jiahao: not used for now, just thinking if we should show the data or not
         request_json = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
         list = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
         r_data = {'data': list}
-        print(r_data)
         response = jsonify(r_data)
         return response
 
@@ -130,8 +128,8 @@ def create_app(debug=False):
             attr_col = columns
             print(columns)
 
-            for column in columns:
-                print(column)
+            # for column in columns:
+            #     print(column)
 
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Dataset")
@@ -201,6 +199,8 @@ def create_app(debug=False):
             except ValueError as e:
                 print(e)
                 flag = False
+        elif preprocessing_code == 'normalization':
+            preprocessing.normalization(input)
 
             # db = mongo_db_function.get_database('FIT4701')
             # collection = mongo_db_function.get_collection(db, "Data")
