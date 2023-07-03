@@ -190,10 +190,10 @@ def create_app(debug=False):
             preprocessing.imputation(input, "median")
         elif preprocessing_code == 'label encoding':
             preprocessing.label(input)
-        elif preprocessing_code == 'feature selection':
-            k = request_json['k']
-            regression_type = request_json['regression_type']
-            target_attribute = request_json['target_attribute']
+        elif preprocessing_code == 'select_k_best':
+            k = request_json['params']['k_best']
+            regression_type = request_json['params']['selection_type']
+            target_attribute = request_json['params']['target_attribute']
             body = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
         elif preprocessing_code == 'standardization':
             try:
