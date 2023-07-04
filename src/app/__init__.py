@@ -293,7 +293,7 @@ def create_app(debug=False):
         delete_data_result = collection.delete_many({'DATASET_ID': dataset_id})
 
         return jsonify({
-            'dataset_removal_success': f'{delete_dataset_result.acknowledged}',
+            'flag': f'{delete_dataset_result.acknowledged}',
             'data_rows_removed': f'{delete_data_result.deleted_count}',
         })
 
