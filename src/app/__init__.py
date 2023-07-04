@@ -73,8 +73,10 @@ def create_app(debug=False):
         algo = request_json["algo_type"]
         independent_variables = request_json["independent_variables"]
         target_variable = request_json["target_variable"]
-        algo_params = {key: value for key, value in request_json["algo_params"].items() if value is not None and value != ''}
-
+        if algo != 'voting_regr':
+            algo_params = {key: value for key, value in request_json["algo_params"].items() if value is not None and value != ''}
+        else:
+            algo_params = request_json["algo_params"]
         return_dict = ""
 
         if algo == "linear_regr":
@@ -90,7 +92,7 @@ def create_app(debug=False):
         elif algo == "bagging_regr":
             return_dict = machine_learning.bagging_regr(path, target_variable, independent_variables, algo_params)
         elif algo == "voting_regr":
-            return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables)
+            return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables, algo_params)
 
         metric = return_dict
         mongo_db_function.remove_file(path)

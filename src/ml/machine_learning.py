@@ -154,10 +154,7 @@ def kth_nearest_neighbors(path: str, target_variable: str, independent_variables
     return return_dict
 
 
-"the regression method can add more, this is only the test type"
-
-
-def voting_regressor(path: str, target_variable: str, independent_variables: list):
+def voting_regressor(path: str, target_variable: str, independent_variables: list, algo_params: dict):
     df = pd.read_csv(path)
 
     x = df[independent_variables]
@@ -168,14 +165,24 @@ def voting_regressor(path: str, target_variable: str, independent_variables: lis
     train_y = train_y.to_numpy().ravel()
     test_y = test_y.to_numpy().ravel()
 
-    reg1 = GradientBoostingRegressor(random_state=1)
-    reg2 = RandomForestRegressor(random_state=1)
-    reg3 = linear_model.LinearRegression()
-    ereg = VotingRegressor(estimators=[('gb', reg1), ('rf', reg2), ('lr', reg3)])
-    ereg = ereg.fit(train_x, train_y)
-    test_y_ = ereg.predict(test_x)
+    estimators = []
 
-    print('Coefficients: ', ereg.score(test_x, test_y))
+    for i, algo_i_params in algo_params.items():
+        estimator_params = {key: value for key, value in algo_i_params["algo_params"].items() if
+                       value is not None and value != ''}
+        if algo_i_params['algo_id'] == 'decision_trees_regr':
+            estimator = ('tree', tree.DecisionTreeRegressor(**estimator_params))
+        elif algo_i_params['algo_id'] == 'knn_regr':
+            estimator = ('knn', neighbors.KNeighborsRegressor(**estimator_params))
+        else:
+            raise Exception('invalid estimator algo selected for voting regression')
+        estimators.append(estimator)
+
+    reg = VotingRegressor(estimators)
+    reg.fit(train_x, train_y)
+    test_y_ = reg.predict(test_x)
+
+    print('Coefficients: ', reg.score(test_x, test_y))
     print("scikit metrics mean absolute error: %.6f" % mean_absolute_error(test_y_, test_y))
     print("scikit metrics mean squared error: %.4f" % mean_squared_error(test_y_, test_y))
     print("R2-score: %.4f" % r2_score(test_y, test_y_))
