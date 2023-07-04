@@ -166,24 +166,26 @@ def k_selection(dataset_id, k, regression_type, target_attribute):
     x = df.drop(target_attribute, axis=1)
     y = df[target_attribute]
 
+    regr = ""
     ret_arr = []
     if regression_type == "mutual_info_regression":
-        selector = SelectKBest(mutual_info_regression, k=k)
-        selector.fit(x, y)
-        selection = x.columns[selector.get_support()]
-        return selection.array.tolist()
+        regr = mutual_info_regression
 
     elif regression_type == "r_regression":
-        selector = SelectKBest(r_regression, k=k)
-        selector.fit(x, y)
-        selection = x.columns[selector.get_support()]
-        return selection.array.tolist()
+        regr = r_regression
 
     elif regression_type == "f_regression":
-        selector = SelectKBest(f_regression, k=k)
-        selector.fit(x, y)
-        selection = x.columns[selector.get_support()]
-        return selection.array.tolist()
+        regr = f_regression
+
+    selector = SelectKBest(regr, k=k)
+    selector.fit_transform(x, y)
+    scores = selector.scores_[selector.get_support()]
+    selection = x.columns[selector.get_support()]
+
+    for i in range(len(scores)):
+        ret_arr.append((selection[i], scores[i]))
+
+    return ret_arr
 
 # label({"DATASET_ID": "6489def06240641623711ca0"})
 # print(k_selection("6491a29f8ec5697220711e44", 5, "f_regression", "STROKE"))
