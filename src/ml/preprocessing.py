@@ -19,13 +19,17 @@ def imputation(dataset_id, strategy_type):
     keys.remove("DATASET_ID")
 
     dataset_id_val = store[0].get('DATASET_ID')
-    for item in store:
-        item.pop('DATASET_ID')
-        item.pop('_id')
-        values = list(item.values())
-        db_data.append(values)
+    # for item in store:
+    #     item.pop('DATASET_ID')
+    #     item.pop('_id')
+    #     values = list(item.values())
+    #     db_data.append(values)
 
-    df = pd.DataFrame(data=db_data)
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+
+    # df = pd.DataFrame(data=db_data)
     df = df.replace("n/a", np.nan)
 
     arr = df.values
