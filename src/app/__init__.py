@@ -10,7 +10,7 @@ from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 
 from ..db import mongo_db_function
-from ..ml import machine_learning, preprocessing
+from ..ml import machine_learning, preprocessing, classification
 
 
 def create_app(debug=False):
@@ -93,6 +93,12 @@ def create_app(debug=False):
             return_dict = machine_learning.bagging_regr(path, target_variable, independent_variables, algo_params)
         elif algo == "voting_regr":
             return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables, algo_params)
+        elif algo == "decision_trees_cls":
+            return_dict = classification.decision_trees_classification(path, target_variable, independent_variables)
+        elif algo == "random_forest_cls":
+            return_dict = classification.random_forest_classification(path, target_variable, independent_variables)
+        elif algo == "knn_cls":
+            return_dict = classification.k_nearest_neighbor_classification(path, target_variable, independent_variables)
 
         metric = return_dict
         mongo_db_function.remove_file(path)
