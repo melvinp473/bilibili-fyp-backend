@@ -94,11 +94,11 @@ def create_app(debug=False):
         elif algo == "voting_regr":
             return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables, algo_params)
         elif algo == "decision_trees_cls":
-            return_dict = classification.decision_trees_classification(path, target_variable, independent_variables)
+            return_dict = classification.decision_trees_classification(path, target_variable, independent_variables, algo_params)
         elif algo == "random_forest_cls":
-            return_dict = classification.random_forest_classification(path, target_variable, independent_variables)
+            return_dict = classification.random_forest_classification(path, target_variable, independent_variables, algo_params)
         elif algo == "knn_cls":
-            return_dict = classification.k_nearest_neighbor_classification(path, target_variable, independent_variables)
+            return_dict = classification.k_nearest_neighbor_classification(path, target_variable, independent_variables, algo_params)
 
         metric = return_dict
         mongo_db_function.remove_file(path)
