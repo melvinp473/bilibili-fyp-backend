@@ -19,13 +19,17 @@ def imputation(dataset_id, strategy_type):
     keys.remove("DATASET_ID")
 
     dataset_id_val = store[0].get('DATASET_ID')
-    for item in store:
-        item.pop('DATASET_ID')
-        item.pop('_id')
-        values = list(item.values())
-        db_data.append(values)
+    # for item in store:
+    #     item.pop('DATASET_ID')
+    #     item.pop('_id')
+    #     values = list(item.values())
+    #     db_data.append(values)
 
-    df = pd.DataFrame(data=db_data)
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+
+    # df = pd.DataFrame(data=db_data)
     df = df.replace("n/a", np.nan)
 
     arr = df.values
@@ -68,6 +72,42 @@ def standardization(dataset_id):
     documents = []
     code = 1
     for element in arr_new:
+        temp_dict = {}
+        for i in range(len(keys)):
+            temp_dict[keys[i]] = element[i]
+        temp_dict['DATASET_ID'] = dataset_id_val
+        temp_dict['CODE'] = code
+        code = code + 1
+        documents.append(temp_dict)
+    mongo_db_function.delete_dataset(collection, dataset_id_val)
+    mongo_db_function.insert_dataset(collection, documents)
+
+def normalization(dataset_id):
+    db = mongo_db_function.get_database('FIT4701')
+    collection = mongo_db_function.get_collection(db, "Data")
+    store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
+    db_data = []
+    keys = list(store[0].keys())
+    keys.pop(0)
+    keys.remove("DATASET_ID")
+    keys.remove('CODE')
+    dataset_id_val = store[0].get('DATASET_ID')
+    for item in store:
+        item.pop('DATASET_ID')
+        item.pop('_id')
+        item.pop('CODE')
+        values = list(item.values())
+        db_data.append(values)
+    df = pd.DataFrame(data=db_data)
+    x = df.values
+
+    scaler = preprocessing.MinMaxScaler()
+    scaler.fit(x)
+    x_processed = scaler.transform(x)
+
+    documents = []
+    code = 1
+    for element in x_processed:
         temp_dict = {}
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
@@ -130,24 +170,26 @@ def k_selection(dataset_id, k, regression_type, target_attribute):
     x = df.drop(target_attribute, axis=1)
     y = df[target_attribute]
 
+    regr = ""
     ret_arr = []
     if regression_type == "mutual_info_regression":
-        selector = SelectKBest(mutual_info_regression, k=k)
-        selector.fit(x, y)
-        selection = x.columns[selector.get_support()]
-        return selection.array.tolist()
+        regr = mutual_info_regression
 
     elif regression_type == "r_regression":
-        selector = SelectKBest(r_regression, k=k)
-        selector.fit(x, y)
-        selection = x.columns[selector.get_support()]
-        return selection.array.tolist()
+        regr = r_regression
 
     elif regression_type == "f_regression":
-        selector = SelectKBest(f_regression, k=k)
-        selector.fit(x, y)
-        selection = x.columns[selector.get_support()]
-        return selection.array.tolist()
+        regr = f_regression
+
+    selector = SelectKBest(regr, k=k)
+    selector.fit_transform(x, y)
+    scores = selector.scores_[selector.get_support()]
+    selection = x.columns[selector.get_support()]
+
+    for i in range(len(scores)):
+        ret_arr.append((selection[i], scores[i]))
+
+    return ret_arr
 
 # label({"DATASET_ID": "6489def06240641623711ca0"})
 # print(k_selection("6491a29f8ec5697220711e44", 5, "f_regression", "STROKE"))
