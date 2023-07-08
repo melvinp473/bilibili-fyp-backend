@@ -73,7 +73,7 @@ def create_app(debug=False):
         algo = request_json["algo_type"]
         independent_variables = request_json["independent_variables"]
         target_variable = request_json["target_variable"]
-        if algo != 'voting_regr':
+        if algo not in ['voting_regr', 'voting_cls']:
             algo_params = {key: value for key, value in request_json["algo_params"].items() if value is not None and value != ''}
         else:
             algo_params = request_json["algo_params"]
@@ -99,6 +99,10 @@ def create_app(debug=False):
             return_dict = classification.random_forest_classification(path, target_variable, independent_variables, algo_params)
         elif algo == "knn_cls":
             return_dict = classification.k_nearest_neighbor_classification(path, target_variable, independent_variables, algo_params)
+        elif algo == "gauss_naive_bayes_cls":
+            return_dict = classification.gaussian_naive_bayes(path, target_variable, independent_variables)
+        elif algo == "voting_cls":
+            return_dict = classification.voting_cls(path, target_variable, independent_variables, algo_params)
 
         metric = return_dict
         mongo_db_function.remove_file(path)

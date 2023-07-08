@@ -169,7 +169,7 @@ def voting_regressor(path: str, target_variable: str, independent_variables: lis
 
     for i, algo_i_params in algo_params.items():
         estimator_params = {key: value for key, value in algo_i_params["algo_params"].items() if
-                       value is not None and value != ''}
+                            value is not None and value != ''}
         if algo_i_params['algo_id'] == 'decision_trees_regr':
             estimator = ('tree', tree.DecisionTreeRegressor(**estimator_params))
         elif algo_i_params['algo_id'] == 'knn_regr':
@@ -243,6 +243,7 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     return_dict.update({"max_error": max_error})
 
     return return_dict
+
 
 def bagging_regr(path: str, target_variable: str, independent_variables: list, algo_params: dict):
     df = pd.read_csv(path)
