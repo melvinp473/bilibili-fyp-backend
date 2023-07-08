@@ -166,14 +166,17 @@ def voting_regressor(path: str, target_variable: str, independent_variables: lis
     test_y = test_y.to_numpy().ravel()
 
     estimators = []
+    estimator_counts = {'tree': 0, 'knn': 0,}
 
     for i, algo_i_params in algo_params.items():
         estimator_params = {key: value for key, value in algo_i_params["algo_params"].items() if
                             value is not None and value != ''}
         if algo_i_params['algo_id'] == 'decision_trees_regr':
-            estimator = ('tree', tree.DecisionTreeRegressor(**estimator_params))
+            estimator_counts['tree'] += 1
+            estimator = ('tree_' + str(estimator_counts['tree']), tree.DecisionTreeRegressor(**estimator_params))
         elif algo_i_params['algo_id'] == 'knn_regr':
-            estimator = ('knn', neighbors.KNeighborsRegressor(**estimator_params))
+            estimator_counts['knn'] += 1
+            estimator = ('knn_' + str(estimator_counts['knn']), neighbors.KNeighborsRegressor(**estimator_params))
         else:
             raise Exception('invalid estimator algo selected for voting regression')
         estimators.append(estimator)
