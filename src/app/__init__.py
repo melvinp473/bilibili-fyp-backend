@@ -189,6 +189,8 @@ def create_app(debug=False):
         request_json = request.get_json()
         dataset_id = request_json['DATASET_ID']
         preprocessing_code = request_json['preprocessing_code']
+        selected_variables = request_json['variables']
+        print(selected_variables)
         print(dataset_id)
         input = {"DATASET_ID": dataset_id}
 
