@@ -3,7 +3,7 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import mutual_info_regression, r_regression, f_regression
+from sklearn.feature_selection import mutual_info_regression, r_regression, f_regression, mutual_info_classif, chi2, f_classif
 
 from src.db import mongo_db_function
 
@@ -180,6 +180,15 @@ def k_selection(dataset_id, k, regression_type, target_attribute):
 
     elif regression_type == "f_regression":
         regr = f_regression
+
+    elif regression_type == "chi2":
+        regr = chi2
+
+    elif regression_type == "mutual_info_classif":
+        regr = mutual_info_classif
+
+    elif regression_type == "f_classif":
+        regr = f_classif
 
     selector = SelectKBest(regr, k=k)
     selector.fit_transform(x, y)
