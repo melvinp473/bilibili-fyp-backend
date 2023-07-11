@@ -221,7 +221,8 @@ def create_app(debug=False):
                 print(e)
                 flag = False
         elif preprocessing_code == 'normalization':
-            preprocessing.normalization(input)
+            selected_variables = request_json['variables']
+            preprocessing.normalization(input, selected_variables)
 
             # db = mongo_db_function.get_database('FIT4701')
             # collection = mongo_db_function.get_collection(db, "Data")

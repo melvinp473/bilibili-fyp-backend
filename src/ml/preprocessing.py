@@ -3,7 +3,8 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import mutual_info_regression, r_regression, f_regression, mutual_info_classif, chi2, f_classif
+from sklearn.feature_selection import mutual_info_regression, r_regression, f_regression, mutual_info_classif, chi2, \
+    f_classif
 
 from src.db import mongo_db_function
 
@@ -95,7 +96,8 @@ def standardization(dataset_id, variables):
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     mongo_db_function.insert_dataset(collection, documents)
 
-def normalization(dataset_id):
+
+def normalization(dataset_id, variables):
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
     store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
@@ -103,30 +105,42 @@ def normalization(dataset_id):
     keys = list(store[0].keys())
     keys.pop(0)
     keys.remove("DATASET_ID")
-    keys.remove('CODE')
+    # keys.remove('CODE')
     dataset_id_val = store[0].get('DATASET_ID')
-    for item in store:
-        item.pop('DATASET_ID')
-        item.pop('_id')
-        item.pop('CODE')
-        values = list(item.values())
-        db_data.append(values)
-    df = pd.DataFrame(data=db_data)
-    x = df.values
+    # for item in store:
+    #     item.pop('DATASET_ID')
+    #     item.pop('_id')
+    #     item.pop('CODE')
+    #     values = list(item.values())
+    #     db_data.append(values)
+    # df = pd.DataFrame(data=db_data)
+    # x = df.values
+    #
+    # scaler = preprocessing.MinMaxScaler()
+    # scaler.fit(x)
+    # x_processed = scaler.transform(x)
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+    # arr = df.values
+    df_temp = pd.DataFrame()
+    for variable in variables:
+        df_temp[variable] = df[variable]
 
-    scaler = preprocessing.MinMaxScaler()
-    scaler.fit(x)
-    x_processed = scaler.transform(x)
+    df_temp = pd.DataFrame(data=preprocessing.MinMaxScaler().fit_transform(df_temp), columns=variables)
+    for variable in variables:
+        df[variable] = df_temp[variable]
+    arr_new = df.values
 
     documents = []
-    code = 1
-    for element in x_processed:
+    # code = 1
+    for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
-        temp_dict['CODE'] = code
-        code = code + 1
+        # temp_dict['CODE'] = code
+        # code = code + 1
         documents.append(temp_dict)
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     mongo_db_function.insert_dataset(collection, documents)
