@@ -197,9 +197,11 @@ def create_app(debug=False):
         flag = True
         body = []
         if preprocessing_code == 'mean imputation':
-            preprocessing.imputation(input, "mean")
+            selected_variables = request_json['variables']
+            preprocessing.imputation(input, "mean", selected_variables)
         elif preprocessing_code == 'median imputation':
-            preprocessing.imputation(input, "median")
+            selected_variables = request_json['variables']
+            preprocessing.imputation(input, "median", selected_variables)
         elif preprocessing_code == 'label encoding':
             preprocessing.label(input)
         elif preprocessing_code == 'select_k_best':

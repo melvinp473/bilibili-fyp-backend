@@ -8,7 +8,7 @@ from sklearn.feature_selection import mutual_info_regression, r_regression, f_re
 from src.db import mongo_db_function
 
 
-def imputation(dataset_id, strategy_type):
+def imputation(dataset_id, strategy_type, variables):
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
     store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
@@ -28,14 +28,19 @@ def imputation(dataset_id, strategy_type):
     df = pd.DataFrame(data=store)
     df = df.drop('DATASET_ID', axis=1)
     df = df.drop('_id', axis=1)
+    df_new = df
 
     # df = pd.DataFrame(data=db_data)
     df = df.replace("n/a", np.nan)
 
-    arr = df.values
+    # arr = df.values
     imp_mean = SimpleImputer(missing_values=np.nan, strategy=strategy_type)
-    arr_new = imp_mean.fit_transform(arr)
+    df_temp = pd.DataFrame(data=imp_mean.fit_transform(df), columns=keys)
+
+    for variable in variables:
+        df_new[variable] = df_temp[variable]
     documents = []
+    arr_new = df_new.values
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
