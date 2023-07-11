@@ -52,7 +52,7 @@ def imputation(dataset_id, strategy_type, variables):
     mongo_db_function.insert_dataset(collection, documents)
 
 
-def standardization(dataset_id):
+def standardization(dataset_id, variables):
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
     store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
@@ -60,29 +60,37 @@ def standardization(dataset_id):
     keys = list(store[0].keys())
     keys.pop(0)
     keys.remove("DATASET_ID")
-    keys.remove('CODE')
+    # keys.remove('CODE')
     dataset_id_val = store[0].get('DATASET_ID')
-    for item in store:
-        item.pop('DATASET_ID')
-        item.pop('_id')
-        item.pop('CODE')
-        values = list(item.values())
-        db_data.append(values)
-    df = pd.DataFrame(data=db_data)
-    arr = df.values
+    # for item in store:
+    #     item.pop('DATASET_ID')
+    #     item.pop('_id')
+    #     item.pop('CODE')
+    #     values = list(item.values())
+    #     db_data.append(values)
+    # df = pd.DataFrame(data=db_data)
 
-    scaler = preprocessing.StandardScaler().fit(arr)
-    arr_new = scaler.transform(arr)
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+    # arr = df.values
+    df_temp = pd.DataFrame()
+    for variable in variables:
+        df_temp[variable] = df[variable]
 
+    df_temp = pd.DataFrame(data=preprocessing.StandardScaler().fit_transform(df_temp), columns=variables)
+    for variable in variables:
+        df[variable] = df_temp[variable]
+    arr_new = df.values
     documents = []
-    code = 1
+    # code = 1
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
-        temp_dict['CODE'] = code
-        code = code + 1
+        # temp_dict['CODE'] = code
+        # code = code + 1
         documents.append(temp_dict)
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     mongo_db_function.insert_dataset(collection, documents)
