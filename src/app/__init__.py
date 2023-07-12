@@ -73,58 +73,64 @@ def create_app(debug=False):
         algo = request_json["algo_type"]
         independent_variables = request_json["independent_variables"]
         target_variable = request_json["target_variable"]
-        if algo not in ['voting_regr', 'voting_cls']:
-            algo_params = {key: value for key, value in request_json["algo_params"].items() if value is not None and value != ''}
-        else:
-            algo_params = request_json["algo_params"]
-        return_dict = ""
+        try:
+            if algo not in ['voting_regr', 'voting_cls']:
+                algo_params = {key: value for key, value in request_json["algo_params"].items() if value is not None and value != ''}
+            else:
+                algo_params = request_json["algo_params"]
+            return_dict = ""
 
-        if algo == "linear_regr":
-            return_dict = machine_learning.linear_regression(path, target_variable, independent_variables)
-        elif algo == "decision_trees_regr":
-            return_dict = machine_learning.decision_trees(path, target_variable, independent_variables, algo_params)
-        elif algo == "svm_regr":
-            return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
-        elif algo == "knn_regr":
-            return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables, algo_params)
-        elif algo == "random_forest_regr":
-            return_dict = machine_learning.random_forest(path, target_variable, independent_variables, algo_params)
-        elif algo == "bagging_regr":
-            return_dict = machine_learning.bagging_regr(path, target_variable, independent_variables, algo_params)
-        elif algo == "voting_regr":
-            return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables, algo_params)
-        elif algo == "decision_trees_cls":
-            return_dict = classification.decision_trees_classification(path, target_variable, independent_variables, algo_params)
-        elif algo == "random_forest_cls":
-            return_dict = classification.random_forest_classification(path, target_variable, independent_variables, algo_params)
-        elif algo == "knn_cls":
-            return_dict = classification.k_nearest_neighbor_classification(path, target_variable, independent_variables, algo_params)
-        elif algo == "gauss_naive_bayes_cls":
-            return_dict = classification.gaussian_naive_bayes(path, target_variable, independent_variables)
-        elif algo == "voting_cls":
-            return_dict = classification.voting_cls(path, target_variable, independent_variables, algo_params)
+            if algo == "linear_regr":
+                return_dict = machine_learning.linear_regression(path, target_variable, independent_variables)
+            elif algo == "decision_trees_regr":
+                return_dict = machine_learning.decision_trees(path, target_variable, independent_variables, algo_params)
+            elif algo == "svm_regr":
+                return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
+            elif algo == "knn_regr":
+                return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables, algo_params)
+            elif algo == "random_forest_regr":
+                return_dict = machine_learning.random_forest(path, target_variable, independent_variables, algo_params)
+            elif algo == "bagging_regr":
+                return_dict = machine_learning.bagging_regr(path, target_variable, independent_variables, algo_params)
+            elif algo == "voting_regr":
+                return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables, algo_params)
+            elif algo == "decision_trees_cls":
+                return_dict = classification.decision_trees_classification(path, target_variable, independent_variables, algo_params)
+            elif algo == "random_forest_cls":
+                return_dict = classification.random_forest_classification(path, target_variable, independent_variables, algo_params)
+            elif algo == "knn_cls":
+                return_dict = classification.k_nearest_neighbor_classification(path, target_variable, independent_variables, algo_params)
+            elif algo == "gauss_naive_bayes_cls":
+                return_dict = classification.gaussian_naive_bayes(path, target_variable, independent_variables)
+            elif algo == "voting_cls":
+                return_dict = classification.voting_cls(path, target_variable, independent_variables, algo_params)
 
-        metric = return_dict
-        mongo_db_function.remove_file(path)
+            metric = return_dict
+            mongo_db_function.remove_file(path)
 
-        log = mongo_db_function.get_collection(db, "Log")
-        run_id = mongo_db_function.get_run_id(log)
+            log = mongo_db_function.get_collection(db, "Log")
+            run_id = mongo_db_function.get_run_id(log)
 
-        run_id += 1
+            run_id += 1
 
-        data = {
-            "user_id": request_json["user_id"],
-            "algo_type": algo,
-            "run_name": request_json["result_logging"]["runName"],
-            "run_id": run_id,
-            "metrics": metric,
-            "create_date": datetime.now(),
-        }
+            data = {
+                "user_id": request_json["user_id"],
+                "algo_type": algo,
+                "run_name": request_json["result_logging"]["runName"],
+                "run_id": run_id,
+                "metrics": metric,
+                "create_date": datetime.now(),
+            }
 
-        mongo_db_function.update_log(log, data)
+            mongo_db_function.update_log(log, data)
 
-        return_dict = {'data': return_dict}
-        json_data = jsonify(return_dict)
+            return_dict = {'data': return_dict}
+            json_data = jsonify(return_dict)
+
+        except BaseException as e:
+            e = str(e)
+            return_dict = {'error': e}
+            json_data = jsonify(return_dict)
 
         return json_data
 
