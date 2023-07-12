@@ -203,24 +203,33 @@ def create_app(debug=False):
         flag = True
         body = []
         if preprocessing_code == 'mean imputation':
-            preprocessing.imputation(input, "mean")
+            selected_variables = request_json['variables']
+            preprocessing.imputation(input, "mean", selected_variables)
+
         elif preprocessing_code == 'median imputation':
-            preprocessing.imputation(input, "median")
+            selected_variables = request_json['variables']
+            preprocessing.imputation(input, "median", selected_variables)
+
         elif preprocessing_code == 'label encoding':
-            preprocessing.label(input)
+            selected_variables = request_json['variables']
+            preprocessing.label(input, selected_variables)
+
         elif preprocessing_code == 'select_k_best':
             k = request_json['params']['k_best']
             regression_type = request_json['params']['selection_type']
             target_attribute = request_json['params']['target_attribute']
             body = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
+
         elif preprocessing_code == 'standardization':
             try:
-                preprocessing.standardization(input)
+                selected_variables = request_json['variables']
+                preprocessing.standardization(input, selected_variables)
             except ValueError as e:
                 print(e)
                 flag = False
         elif preprocessing_code == 'normalization':
-            preprocessing.normalization(input)
+            selected_variables = request_json['variables']
+            preprocessing.normalization(input, selected_variables)
 
             # db = mongo_db_function.get_database('FIT4701')
             # collection = mongo_db_function.get_collection(db, "Data")
