@@ -205,7 +205,8 @@ def create_app(debug=False):
             preprocessing.imputation(input, "median", selected_variables)
 
         elif preprocessing_code == 'label encoding':
-            preprocessing.label(input)
+            selected_variables = request_json['variables']
+            preprocessing.label(input, selected_variables)
 
         elif preprocessing_code == 'select_k_best':
             k = request_json['params']['k_best']

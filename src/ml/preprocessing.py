@@ -146,7 +146,7 @@ def normalization(dataset_id, variables):
     mongo_db_function.insert_dataset(collection, documents)
 
 
-def label(dataset_id):
+def label(dataset_id, variables):
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
     store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
@@ -155,13 +155,20 @@ def label(dataset_id):
     keys.pop(0)
     keys.remove("DATASET_ID")
     dataset_id_val = store[0].get('DATASET_ID')
-    for item in store:
-        item.pop('DATASET_ID')
-        item.pop('_id')
-        values = list(item.values())
-        db_data.append(values)
-    df = pd.DataFrame(data=db_data)
-    arr = df.values
+    # for item in store:
+    #     item.pop('DATASET_ID')
+    #     item.pop('_id')
+    #     values = list(item.values())
+    #     db_data.append(values)
+    # df = pd.DataFrame(data=db_data)
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+
+    df_temp = pd.DataFrame()
+    for variable in variables:
+        df_temp[variable] = df[variable]
+    arr = df_temp.values
     label = arr[0]
     i_store = []
     for i in range(len(label)):
@@ -173,7 +180,13 @@ def label(dataset_id):
     label_encoder = preprocessing.LabelEncoder()
     for column in i_store:
         arr[:, column] = label_encoder.fit_transform(arr[:, column])
-    for element in arr:
+
+    df_temp = pd.DataFrame(data=arr, columns=variables)
+    for variable in variables:
+        df[variable] = df_temp[variable]
+    arr_new = df.values
+
+    for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
