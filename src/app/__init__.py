@@ -105,24 +105,25 @@ def create_app(debug=False):
             elif algo == "voting_cls":
                 return_dict = classification.voting_cls(path, target_variable, independent_variables, algo_params)
 
-            metric = return_dict
-            mongo_db_function.remove_file(path)
+            if request_json["result_logging"]["save_results"]:
+                metric = return_dict
+                mongo_db_function.remove_file(path)
 
-            log = mongo_db_function.get_collection(db, "Log")
-            run_id = mongo_db_function.get_run_id(log)
+                log = mongo_db_function.get_collection(db, "Log")
+                run_id = mongo_db_function.get_run_id(log)
 
-            run_id += 1
+                run_id += 1
 
-            data = {
-                "user_id": request_json["user_id"],
-                "algo_type": algo,
-                "run_name": request_json["result_logging"]["runName"],
-                "run_id": run_id,
-                "metrics": metric,
-                "create_date": datetime.now(),
-            }
+                data = {
+                    "user_id": request_json["user_id"],
+                    "algo_type": algo,
+                    "run_name": request_json["result_logging"]["runName"],
+                    "run_id": run_id,
+                    "metrics": metric,
+                    "create_date": datetime.now(),
+                }
 
-            mongo_db_function.update_log(log, data)
+                mongo_db_function.update_log(log, data)
 
             return_dict = {'data': return_dict}
             json_data = jsonify(return_dict)
