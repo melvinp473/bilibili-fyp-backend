@@ -64,6 +64,7 @@ def create_app(debug=False):
 
     @application.route('/machine-learning', methods=['POST'])
     def run_machine_learning():
+
         np.random.seed(42)
         request_json = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
