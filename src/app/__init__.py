@@ -8,7 +8,7 @@ import seaborn as sns
 from bson import ObjectId
 from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
-
+import numpy as np
 from ..db import mongo_db_function
 from ..ml import machine_learning, preprocessing, classification
 
@@ -64,6 +64,7 @@ def create_app(debug=False):
 
     @application.route('/machine-learning', methods=['POST'])
     def run_machine_learning():
+        np.random.seed(42)
         request_json = request.get_json()
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
