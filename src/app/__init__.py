@@ -116,6 +116,7 @@ def create_app(debug=False):
 
                 data = {
                     "user_id": request_json["user_id"],
+                    "dataset_id": request_json["DATASET_ID"],
                     "algo_type": algo,
                     "run_name": request_json["result_logging"]["runName"],
                     "run_id": run_id,
@@ -289,9 +290,19 @@ def create_app(debug=False):
     @application.route('/get-results', methods=['POST'])
     def get_results():
         request_json = request.get_json()
+        dataset_id = request_json['dataset_id']
+        user_id = request_json['user_id']
+
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Log")
-        r_list = mongo_db_function.get_by_query(collection, request_json, "user_id")
+        # r_list = mongo_db_function.get_by_query(collection, request_json, "user_id")
+        cursor = collection.find({
+            'dataset_id': dataset_id,
+            'user_id': user_id
+        })
+        r_list = list(cursor)
+        for item in r_list:
+            item["_id"] = str(item["_id"])
         r_data = {'data': r_list}
         print(r_data)
         response = jsonify(r_data)
