@@ -20,7 +20,7 @@ def decision_trees_classification(path: str, target_variable: str, independent_v
     df = pd.read_csv(path)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -93,7 +93,7 @@ def random_forest_classification(path: str, target_variable: str, independent_va
     df = pd.read_csv(path)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -164,7 +164,7 @@ def k_nearest_neighbor_classification(path: str, target_variable: str, independe
     df = pd.read_csv(path)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -237,7 +237,7 @@ def gaussian_naive_bayes(path: str, target_variable: str, independent_variables:
     df = pd.read_csv(path)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -309,7 +309,7 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
 
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
