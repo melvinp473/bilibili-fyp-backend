@@ -146,6 +146,67 @@ def normalization(dataset_id, variables):
     mongo_db_function.insert_dataset(collection, documents)
 
 
+def outliers_removal(dataset_id, variables):
+    # id = '64a12d201367499af006379f'
+    db = mongo_db_function.get_database('FIT4701')
+    collection = mongo_db_function.get_collection(db, "Data")
+    input_ = {"DATASET_ID": dataset_id}
+    store = mongo_db_function.get_by_query(collection, input_, "DATASET_ID")
+
+    keys = list(store[0].keys())
+    keys.pop(0)
+    keys.remove("DATASET_ID")
+    dataset_id_val = store[0].get('DATASET_ID')
+
+    # Create the dataframe
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+
+    for outlier in variables:
+        # outlier = 'HCC_HOLDER'
+
+        # sns.boxplot(df['HCC_HOLDER'])
+        # plt.show()
+
+        # print(np.where(df['HCC_HOLDER']>2.5))
+
+        # z = np.abs(stats.zscore(df[outlier]))
+        # print(z)
+
+        Q1 = np.percentile(df[outlier], 25, method='midpoint')
+        Q3 = np.percentile(df[outlier], 75, method='midpoint')
+        IQR = Q3 - Q1
+        # print(IQR)
+
+        # Above Upper bound
+        upper = Q3 + 1.5 * IQR
+        upper_array = np.array(df[outlier] >= upper)
+        print("Upper Bound:", upper)
+        print(upper_array.sum())
+
+        # Below Lower bound
+        lower = Q1 - 1.5 * IQR
+        lower_array = np.array(df[outlier] <= lower)
+        print("Lower Bound:", lower)
+        print(lower_array.sum())
+
+        # print(df[upper_array])
+        df.loc[upper_array, outlier] = 'n/a'
+        df.loc[lower_array, outlier] = 'n/a'
+        # print(df[upper_array][outlier])
+        # print(df[lower_array][outlier])
+
+    arr_new = df.values
+    documents = []
+
+    for element in arr_new:
+        temp_dict = {}
+        for i in range(len(keys)):
+            temp_dict[keys[i]] = element[i]
+        temp_dict['DATASET_ID'] = dataset_id_val
+
+
 def label(dataset_id, variables):
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
