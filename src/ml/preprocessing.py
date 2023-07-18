@@ -150,8 +150,8 @@ def outliers_removal(dataset_id, variables):
     # id = '64a12d201367499af006379f'
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
-    input_ = {"DATASET_ID": dataset_id}
-    store = mongo_db_function.get_by_query(collection, input_, "DATASET_ID")
+    # input_ = {"DATASET_ID": dataset_id}
+    store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
 
     keys = list(store[0].keys())
     keys.pop(0)

@@ -218,6 +218,10 @@ def create_app(debug=False):
             selected_variables = request_json['variables']
             preprocessing.label(input, selected_variables)
 
+        elif preprocessing_code == 'outlier':
+            selected_variables = request_json['variables']
+            preprocessing.outliers_removal(input, selected_variables)
+
         elif preprocessing_code == 'select_k_best':
             k = request_json['params']['k_best']
             regression_type = request_json['params']['selection_type']
