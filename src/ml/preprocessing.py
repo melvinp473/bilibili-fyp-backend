@@ -205,6 +205,10 @@ def outliers_removal(dataset_id, variables):
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
+        documents.append(temp_dict)
+
+    mongo_db_function.delete_dataset(collection, dataset_id_val)
+    mongo_db_function.insert_dataset(collection, documents)
 
 
 def label(dataset_id, variables):
