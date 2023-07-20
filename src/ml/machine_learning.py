@@ -15,7 +15,7 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
     regr = linear_model.LinearRegression()
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
@@ -45,7 +45,7 @@ def support_vector_machines(path: str, target_variable: str, independent_variabl
     x = df[independent_variables]
     y = df[[target_variable]]
     regr = svm.SVR(kernel="linear", C=100, gamma="auto")
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -88,7 +88,7 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     regr = tree.DecisionTreeRegressor(**algo_params)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
@@ -124,7 +124,7 @@ def kth_nearest_neighbors(path: str, target_variable: str, independent_variables
     regr = neighbors.KNeighborsRegressor(**algo_params)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
@@ -159,7 +159,7 @@ def voting_regressor(path: str, target_variable: str, independent_variables: lis
 
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -216,7 +216,7 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
 
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
 
     regr = RandomForestRegressor(**algo_params)
     regr.fit(train_x, train_y)
@@ -253,7 +253,7 @@ def bagging_regr(path: str, target_variable: str, independent_variables: list, a
 
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.90, random_state=1)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
 
     estimator_str = algo_params.pop('estimator')
     estimator_params = algo_params.pop('estimator_params')
