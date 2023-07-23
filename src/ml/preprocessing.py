@@ -32,7 +32,7 @@ def imputation(dataset_id, strategy_type, variables):
     df_new = df
 
     # df = pd.DataFrame(data=db_data)
-    df = df.replace("n/a", np.nan)
+    df = df.replace("", np.nan)
 
     # arr = df.values
     imp_mean = SimpleImputer(missing_values=np.nan, strategy=strategy_type)
