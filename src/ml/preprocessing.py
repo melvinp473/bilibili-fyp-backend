@@ -192,8 +192,8 @@ def outliers_removal(dataset_id, variables):
         print(lower_array.sum())
 
         # print(df[upper_array])
-        df.loc[upper_array, outlier] = 'n/a'
-        df.loc[lower_array, outlier] = 'n/a'
+        df.loc[upper_array, outlier] = ''
+        df.loc[lower_array, outlier] = ''
         # print(df[upper_array][outlier])
         # print(df[lower_array][outlier])
 
