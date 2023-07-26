@@ -31,17 +31,15 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
     mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y, test_y_)
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
-    importance_values = regr.coef_[0].tolist()
 
-    # Generate the figure **without using pyplot**.
+    # Feature importance chart
+    importance_values = regr.coef_[0].tolist()
     fig = Figure()
     ax = fig.subplots()
     ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
     ax.set_xticks(independent_variables)
     ax.set_xticklabels(independent_variables, rotation=30, ha='right')
     fig.tight_layout()
-
-    # Save it to a temporary buffer.
     buf = BytesIO()
     fig.savefig(buf, format="png")
     feature_imp_plot = base64.b64encode(bytes(buf.getbuffer())).decode("ascii")
@@ -123,17 +121,15 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y, test_y_)
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
-    importance_values = regr.feature_importances_
 
-    # Generate the figure **without using pyplot**.
+    # Feature importance chart
+    importance_values = regr.feature_importances_[0].tolist()
     fig = Figure()
     ax = fig.subplots()
     ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
     ax.set_xticks(independent_variables)
     ax.set_xticklabels(independent_variables, rotation=30, ha='right')
     fig.tight_layout()
-
-    # Save it to a temporary buffer.
     buf = BytesIO()
     fig.savefig(buf, format="png")
     feature_imp_plot = base64.b64encode(bytes(buf.getbuffer())).decode("ascii")
@@ -272,21 +268,15 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y, test_y_)
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
-    importance_values = regr.feature_importances_
 
-    # summarize feature importance
-    for i, v in enumerate(importance_values):
-        print('Feature: %0d, Score: %.5f' % (i, v))
-
-    # Generate the figure **without using pyplot**.
+    # Feature importance chart
+    importance_values = regr.feature_importances_[0].tolist()
     fig = Figure()
     ax = fig.subplots()
     ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
     ax.set_xticks(independent_variables)
     ax.set_xticklabels(independent_variables, rotation=30, ha='right')
     fig.tight_layout()
-
-    # Save it to a temporary buffer.
     buf = BytesIO()
     fig.savefig(buf, format="png")
     feature_imp_plot = base64.b64encode(bytes(buf.getbuffer())).decode("ascii")
