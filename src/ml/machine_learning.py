@@ -123,7 +123,7 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
     # Feature importance chart
-    importance_values = regr.feature_importances_[0].tolist()
+    importance_values = regr.feature_importances_
     fig = Figure()
     ax = fig.subplots()
     ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
@@ -270,7 +270,7 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
     # Feature importance chart
-    importance_values = regr.feature_importances_[0].tolist()
+    importance_values = regr.feature_importances_
     fig = Figure()
     ax = fig.subplots()
     ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
