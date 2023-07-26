@@ -50,27 +50,27 @@ def decision_trees_classification(path: str, target_variable: str, independent_v
     feature_imp_plot = base64.b64encode(buffer.getvalue()).decode("ascii")
     buffer.close()
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
     buffer = io.BytesIO()
-    fig_rfc = rfc_disp.figure_
-    fig_rfc.savefig(buffer, format='png')
-    plot_rfc_data = base64.b64encode(buffer.getvalue()).decode()
+    fig_roc = roc_disp.figure_
+    fig_roc.savefig(buffer, format='png')
+    plot_roc_data = base64.b64encode(buffer.getvalue()).decode()
     buffer.close()
 
     precision, recall, _ = precision_recall_curve(test_y, test_y_)
-    disp = PrecisionRecallDisplay(precision=precision, recall=recall)
-    disp.plot()
+    pr_disp = PrecisionRecallDisplay(precision=precision, recall=recall)
+    pr_disp.plot()
     buffer = io.BytesIO()
-    fig_disp = disp.figure_
-    fig_disp.savefig(buffer, format='png')
-    plot_disp_data = base64.b64encode(buffer.getvalue()).decode()
+    fig_pr = pr_disp.figure_
+    fig_pr.savefig(buffer, format='png')
+    plot_pr_data = base64.b64encode(buffer.getvalue()).decode()
     buffer.close()
 
 
     cm = confusion_matrix(test_y, test_y_)
-    cm_display = ConfusionMatrixDisplay(cm).plot()
+    cm_disp = ConfusionMatrixDisplay(cm).plot()
     buffer = io.BytesIO()
-    fig_cm = cm_display.figure_
+    fig_cm = cm_disp.figure_
     fig_cm.savefig(buffer, format='png')
     plot_cm_data = base64.b64encode(buffer.getvalue()).decode()
     buffer.close()
@@ -96,8 +96,8 @@ def decision_trees_classification(path: str, target_variable: str, independent_v
     return_dict.update({"recall": recall})
     return_dict.update({"specificity": specificity})
     return_dict.update({"f1": f1})
-    return_dict.update({"rfc_plot": plot_rfc_data})
-    return_dict.update({"disp_plot": plot_disp_data})
+    return_dict.update({"roc_plot": plot_roc_data})
+    return_dict.update({"pr_plot": plot_pr_data})
     return_dict.update({"cm_plot": plot_cm_data})
     return_dict.update({"feature_imp_plot": feature_imp_plot})
     return return_dict
@@ -118,30 +118,30 @@ def random_forest_classification(path: str, target_variable: str, independent_va
     test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
 
     print("---------------------------------------------------------------------")
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
     precision, recall, _ = precision_recall_curve(test_y, test_y_)
-    disp = PrecisionRecallDisplay(precision=precision, recall=recall)
-    disp.plot()
+    pr_disp = PrecisionRecallDisplay(precision=precision, recall=recall)
+    pr_disp.plot()
     cm = confusion_matrix(test_y, test_y_)
-    cm_display = ConfusionMatrixDisplay(cm).plot()
+    cm_disp = ConfusionMatrixDisplay(cm).plot()
 
-    fig_rfc = rfc_disp.figure_
+    fig_roc = roc_disp.figure_
     buffer_rfc = io.BytesIO()
-    fig_rfc.savefig(buffer_rfc, format='png')
+    fig_roc.savefig(buffer_rfc, format='png')
     buffer_rfc.seek(0)
-    plot_rfc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
+    plot_roc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
 
-    fig_disp = disp.figure_
+    fig_pr = pr_disp.figure_
     buffer_disp = io.BytesIO()
-    fig_disp.savefig(buffer_disp, format='png')
+    fig_pr.savefig(buffer_disp, format='png')
     buffer_disp.seek(0)
-    plot_disp_data = base64.b64encode(buffer_disp.getvalue()).decode()
+    plot_pr_data = base64.b64encode(buffer_disp.getvalue()).decode()
 
-    fig_cm = cm_display.figure_
+    fig_cm = cm_disp.figure_
     buffer_cm = io.BytesIO()
     fig_cm.savefig(buffer_cm, format='png')
     buffer_cm.seek(0)
@@ -168,8 +168,8 @@ def random_forest_classification(path: str, target_variable: str, independent_va
     return_dict.update({"recall": recall})
     return_dict.update({"specificity": specificity})
     return_dict.update({"f1": f1})
-    return_dict.update({"rfc_plot": plot_rfc_data})
-    return_dict.update({"disp_plot": plot_disp_data})
+    return_dict.update({"roc_plot": plot_roc_data})
+    return_dict.update({"pr_plot": plot_pr_data})
     return_dict.update({"cm_plot": plot_cm_data})
     return return_dict
 
@@ -190,31 +190,31 @@ def k_nearest_neighbor_classification(path: str, target_variable: str, independe
     test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
 
     print(test_y)
     print("---------------------------------------------------------------------")
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
     precision, recall, _ = precision_recall_curve(test_y, test_y_)
-    disp = PrecisionRecallDisplay(precision=precision, recall=recall)
-    disp.plot()
+    pr_disp = PrecisionRecallDisplay(precision=precision, recall=recall)
+    pr_disp.plot()
     cm = confusion_matrix(test_y, test_y_)
-    cm_display = ConfusionMatrixDisplay(cm).plot()
+    cm_disp = ConfusionMatrixDisplay(cm).plot()
 
-    fig_rfc = rfc_disp.figure_
+    fig_roc = roc_disp.figure_
     buffer_rfc = io.BytesIO()
-    fig_rfc.savefig(buffer_rfc, format='png')
+    fig_roc.savefig(buffer_rfc, format='png')
     buffer_rfc.seek(0)
-    plot_rfc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
+    plot_roc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
 
-    fig_disp = disp.figure_
+    fig_pr = pr_disp.figure_
     buffer_disp = io.BytesIO()
-    fig_disp.savefig(buffer_disp, format='png')
+    fig_pr.savefig(buffer_disp, format='png')
     buffer_disp.seek(0)
-    plot_disp_data = base64.b64encode(buffer_disp.getvalue()).decode()
+    plot_pr_data = base64.b64encode(buffer_disp.getvalue()).decode()
 
-    fig_cm = cm_display.figure_
+    fig_cm = cm_disp.figure_
     buffer_cm = io.BytesIO()
     fig_cm.savefig(buffer_cm, format='png')
     buffer_cm.seek(0)
@@ -241,8 +241,8 @@ def k_nearest_neighbor_classification(path: str, target_variable: str, independe
     return_dict.update({"recall": recall})
     return_dict.update({"specificity": specificity})
     return_dict.update({"f1": f1})
-    return_dict.update({"rfc_plot": plot_rfc_data})
-    return_dict.update({"disp_plot": plot_disp_data})
+    return_dict.update({"roc_plot": plot_roc_data})
+    return_dict.update({"pr_plot": plot_pr_data})
     return_dict.update({"cm_plot": plot_cm_data})
     return return_dict
 
@@ -262,30 +262,30 @@ def gaussian_naive_bayes(path: str, target_variable: str, independent_variables:
     test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
 
     print("---------------------------------------------------------------------")
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
     precision, recall, _ = precision_recall_curve(test_y, test_y_)
-    disp = PrecisionRecallDisplay(precision=precision, recall=recall)
-    disp.plot()
+    pr_disp = PrecisionRecallDisplay(precision=precision, recall=recall)
+    pr_disp.plot()
     cm = confusion_matrix(test_y, test_y_)
-    cm_display = ConfusionMatrixDisplay(cm).plot()
+    cm_disp = ConfusionMatrixDisplay(cm).plot()
 
-    fig_rfc = rfc_disp.figure_
+    fig_roc = roc_disp.figure_
     buffer_rfc = io.BytesIO()
-    fig_rfc.savefig(buffer_rfc, format='png')
+    fig_roc.savefig(buffer_rfc, format='png')
     buffer_rfc.seek(0)
-    plot_rfc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
+    plot_roc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
 
-    fig_disp = disp.figure_
+    fig_pr = pr_disp.figure_
     buffer_disp = io.BytesIO()
-    fig_disp.savefig(buffer_disp, format='png')
+    fig_pr.savefig(buffer_disp, format='png')
     buffer_disp.seek(0)
-    plot_disp_data = base64.b64encode(buffer_disp.getvalue()).decode()
+    plot_pr_data = base64.b64encode(buffer_disp.getvalue()).decode()
 
-    fig_cm = cm_display.figure_
+    fig_cm = cm_disp.figure_
     buffer_cm = io.BytesIO()
     fig_cm.savefig(buffer_cm, format='png')
     buffer_cm.seek(0)
@@ -312,8 +312,8 @@ def gaussian_naive_bayes(path: str, target_variable: str, independent_variables:
     return_dict.update({"recall": recall})
     return_dict.update({"specificity": specificity})
     return_dict.update({"f1": f1})
-    return_dict.update({"rfc_plot": plot_rfc_data})
-    return_dict.update({"disp_plot": plot_disp_data})
+    return_dict.update({"roc_plot": plot_roc_data})
+    return_dict.update({"pr_plot": plot_pr_data})
     return_dict.update({"cm_plot": plot_cm_data})
     return return_dict
 
@@ -360,29 +360,29 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
 
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
 
     print("---------------------------------------------------------------------")
-    rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
     precision, recall, _ = precision_recall_curve(test_y, test_y_)
-    disp = PrecisionRecallDisplay(precision=precision, recall=recall)
-    disp.plot()
+    pr_disp = PrecisionRecallDisplay(precision=precision, recall=recall)
+    pr_disp.plot()
     cm = confusion_matrix(test_y, test_y_)
-    cm_display = ConfusionMatrixDisplay(cm).plot()
+    cm_disp = ConfusionMatrixDisplay(cm).plot()
 
-    fig_rfc = rfc_disp.figure_
+    fig_roc = roc_disp.figure_
     buffer_rfc = io.BytesIO()
-    fig_rfc.savefig(buffer_rfc, format='png')
+    fig_roc.savefig(buffer_rfc, format='png')
     buffer_rfc.seek(0)
-    plot_rfc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
+    plot_roc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
 
-    fig_disp = disp.figure_
+    fig_pr = pr_disp.figure_
     buffer_disp = io.BytesIO()
-    fig_disp.savefig(buffer_disp, format='png')
+    fig_pr.savefig(buffer_disp, format='png')
     buffer_disp.seek(0)
-    plot_disp_data = base64.b64encode(buffer_disp.getvalue()).decode()
+    plot_pr_data = base64.b64encode(buffer_disp.getvalue()).decode()
 
-    fig_cm = cm_display.figure_
+    fig_cm = cm_disp.figure_
     buffer_cm = io.BytesIO()
     fig_cm.savefig(buffer_cm, format='png')
     buffer_cm.seek(0)
@@ -409,8 +409,8 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     return_dict.update({"recall": recall})
     return_dict.update({"specificity": specificity})
     return_dict.update({"f1": f1})
-    return_dict.update({"rfc_plot": plot_rfc_data})
-    return_dict.update({"disp_plot": plot_disp_data})
+    return_dict.update({"roc_plot": plot_roc_data})
+    return_dict.update({"pr_plot": plot_pr_data})
     return_dict.update({"cm_plot": plot_cm_data})
     return return_dict
 
