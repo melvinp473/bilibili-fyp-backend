@@ -14,6 +14,7 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 import io
 import base64
+from matplotlib.figure import Figure
 
 
 def decision_trees_classification(path: str, target_variable: str, independent_variables: list, algo_params: dict):
@@ -31,36 +32,48 @@ def decision_trees_classification(path: str, target_variable: str, independent_v
     test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
 
-
     print("---------------------------------------------------------------------")
 
+    importance_values = clf.feature_importances_
+
+    # Generate the figure **without using pyplot**.
+    fig = Figure()
+    ax = fig.subplots()
+    ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
+    ax.set_xticks(independent_variables)
+    ax.set_xticklabels(independent_variables, rotation=30, ha='right')
+    fig.tight_layout()
+
+    # Save it to a temporary buffer.
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png")
+    feature_imp_plot = base64.b64encode(buffer.getvalue()).decode("ascii")
+    buffer.close()
+
     rfc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+    buffer = io.BytesIO()
+    fig_rfc = rfc_disp.figure_
+    fig_rfc.savefig(buffer, format='png')
+    plot_rfc_data = base64.b64encode(buffer.getvalue()).decode()
+    buffer.close()
+
     precision, recall, _ = precision_recall_curve(test_y, test_y_)
     disp = PrecisionRecallDisplay(precision=precision, recall=recall)
     disp.plot()
+    buffer = io.BytesIO()
+    fig_disp = disp.figure_
+    fig_disp.savefig(buffer, format='png')
+    plot_disp_data = base64.b64encode(buffer.getvalue()).decode()
+    buffer.close()
+
+
     cm = confusion_matrix(test_y, test_y_)
     cm_display = ConfusionMatrixDisplay(cm).plot()
-
-    fig_rfc = rfc_disp.figure_
-    buffer_rfc = io.BytesIO()
-    fig_rfc.savefig(buffer_rfc, format='png')
-    buffer_rfc.seek(0)
-    plot_rfc_data = base64.b64encode(buffer_rfc.getvalue()).decode()
-
-
-    fig_disp = disp.figure_
-    buffer_disp = io.BytesIO()
-    fig_disp.savefig(buffer_disp, format='png')
-    buffer_disp.seek(0)
-    plot_disp_data = base64.b64encode(buffer_disp.getvalue()).decode()
-
-
+    buffer = io.BytesIO()
     fig_cm = cm_display.figure_
-    buffer_cm = io.BytesIO()
-    fig_cm.savefig(buffer_cm, format='png')
-    buffer_cm.seek(0)
-    plot_cm_data = base64.b64encode(buffer_cm.getvalue()).decode()
-
+    fig_cm.savefig(buffer, format='png')
+    plot_cm_data = base64.b64encode(buffer.getvalue()).decode()
+    buffer.close()
 
     print(test_y_)
     auc = roc_auc_score(test_y, test_y_auc)
@@ -86,6 +99,7 @@ def decision_trees_classification(path: str, target_variable: str, independent_v
     return_dict.update({"rfc_plot": plot_rfc_data})
     return_dict.update({"disp_plot": plot_disp_data})
     return_dict.update({"cm_plot": plot_cm_data})
+    return_dict.update({"feature_imp_plot": feature_imp_plot})
     return return_dict
 
 
