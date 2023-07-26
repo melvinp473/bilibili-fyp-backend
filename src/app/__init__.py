@@ -224,9 +224,19 @@ def create_app(debug=False):
 
         elif preprocessing_code == 'select_k_best':
             k = request_json['params']['k_best']
-            regression_type = request_json['params']['selection_type']
+            selection_type = request_json['params']['selection_type']
             target_attribute = request_json['params']['target_attribute']
-            body = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
+            body = preprocessing.k_selection(dataset_id, k, selection_type, target_attribute)
+
+        elif preprocessing_code == 'wrapper':
+            k = request_json['params']['k_best']
+            selection_type = request_json['params']['selection_type']
+            target_attribute = request_json['params']['target_attribute']
+            estimator_type = request_json['params']['estimator_type']
+            estimator_params = request_json['params']['estimator_params']
+            model = request_json['params']['model']
+            body = preprocessing.wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator_type,
+                                                   estimator_params, model)
 
         elif preprocessing_code == 'standardization':
             try:
