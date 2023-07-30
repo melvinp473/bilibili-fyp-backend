@@ -66,7 +66,6 @@ def decision_trees_classification(path: str, target_variable: str, independent_v
     plot_pr_data = base64.b64encode(buffer.getvalue()).decode()
     buffer.close()
 
-
     cm = confusion_matrix(test_y, test_y_)
     cm_disp = ConfusionMatrixDisplay(cm).plot()
     buffer = io.BytesIO()
