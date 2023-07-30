@@ -72,7 +72,7 @@ def create_app(debug=False):
         store = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
         path = mongo_db_function.list_to_csv(store)
 
-        algo = request_json["algo_type"]
+        algo = request_json["algo_name"]
         independent_variables = request_json["independent_variables"]
         target_variable = request_json["target_variable"]
         try:
@@ -119,7 +119,8 @@ def create_app(debug=False):
                 data = {
                     "user_id": request_json["user_id"],
                     "dataset_id": request_json["DATASET_ID"],
-                    "algo_type": algo,
+                    "algo_type": request_json["algo_type"],
+                    "algo_name": algo,
                     "run_name": request_json["result_logging"]["runName"],
                     "run_id": run_id,
                     "metrics": metric,
