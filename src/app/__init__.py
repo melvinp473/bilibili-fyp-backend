@@ -147,11 +147,11 @@ def create_app(debug=False):
             reader = csv.reader(csvfile)
 
             columns = next(reader)
-            attr_col = columns
-            print(columns)
+            attr_cols = []
+            for col in columns:
+                attr_cols.append(col[0:15])
 
-            # for column in columns:
-            #     print(column)
+            print(attr_cols)
 
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Dataset")
@@ -162,7 +162,7 @@ def create_app(debug=False):
             "status": "ACTIVE",
             "create_date": datetime.now(),
             "update_date": datetime.now(),
-            "attributes": attr_col
+            "attributes": attr_cols
         }
 
         result = collection.insert_one(data)
@@ -174,10 +174,10 @@ def create_app(debug=False):
         reader = csv.DictReader(csvfile)
 
         data_rows = []
-        for each in reader:
+        for line in reader:
             row = {}
-            for field in columns:
-                row[field] = each[field]
+            for col in columns:
+                row[col[0:15]] = line[col]
             id = str(result.inserted_id)
             row["DATASET_ID"] = id
             print(row)
@@ -224,9 +224,19 @@ def create_app(debug=False):
 
         elif preprocessing_code == 'select_k_best':
             k = request_json['params']['k_best']
-            regression_type = request_json['params']['selection_type']
+            selection_type = request_json['params']['selection_type']
             target_attribute = request_json['params']['target_attribute']
-            body = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
+            body = preprocessing.k_selection(dataset_id, k, selection_type, target_attribute)
+
+        elif preprocessing_code == 'wrapper':
+            k = request_json['params']['k_best']
+            selection_type = request_json['params']['selection_type']
+            target_attribute = request_json['params']['target_attribute']
+            estimator_type = request_json['params']['estimator_type']
+            estimator_params = request_json['params']['estimator_params']
+            model = request_json['params']['model']
+            body = preprocessing.wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator_type,
+                                                   estimator_params, model)
 
         elif preprocessing_code == 'standardization':
             try:

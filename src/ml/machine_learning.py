@@ -3,14 +3,11 @@ import pandas as pd
 import sklearn.linear_model as linear_model
 from sklearn import svm
 from sklearn import tree, neighbors
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, VotingRegressor, BaggingRegressor
+from sklearn.ensemble import RandomForestRegressor, VotingRegressor, BaggingRegressor
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
-from io import BytesIO
-import base64
-from matplotlib.figure import Figure
-
 from src.ml import metric_cal
+from . import plotting
 
 
 def linear_regression(path: str, target_variable: str, independent_variables: list):
@@ -31,20 +28,11 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
     mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y, test_y_)
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
+
+    # Feature importance chart
     importance_values = regr.coef_[0].tolist()
-
-    # Generate the figure **without using pyplot**.
-    fig = Figure()
-    ax = fig.subplots()
-    ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
-    ax.set_xticks(independent_variables)
-    ax.set_xticklabels(independent_variables, rotation=30, ha='right')
-    fig.tight_layout()
-
-    # Save it to a temporary buffer.
-    buf = BytesIO()
-    fig.savefig(buf, format="png")
-    feature_imp_plot = base64.b64encode(bytes(buf.getbuffer())).decode("ascii")
+    fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    feature_imp_plot = plotting.figure_to_base64(fig)
 
     return_dict.update({"r2_score": r2})
     return_dict.update({"mae": mean_absolute})
@@ -123,20 +111,11 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y, test_y_)
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
+
+    # Feature importance chart
     importance_values = regr.feature_importances_
-
-    # Generate the figure **without using pyplot**.
-    fig = Figure()
-    ax = fig.subplots()
-    ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
-    ax.set_xticks(independent_variables)
-    ax.set_xticklabels(independent_variables, rotation=30, ha='right')
-    fig.tight_layout()
-
-    # Save it to a temporary buffer.
-    buf = BytesIO()
-    fig.savefig(buf, format="png")
-    feature_imp_plot = base64.b64encode(bytes(buf.getbuffer())).decode("ascii")
+    fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    feature_imp_plot = plotting.figure_to_base64(fig)
 
     return_dict = {"r2_score": r2}
     return_dict.update({"mae": mean_absolute})
@@ -272,24 +251,11 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     mean_absolute_percentage = metric_cal.metric_mean_absolute_percentage(test_y, test_y_)
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
+
+    # Feature importance chart
     importance_values = regr.feature_importances_
-
-    # summarize feature importance
-    for i, v in enumerate(importance_values):
-        print('Feature: %0d, Score: %.5f' % (i, v))
-
-    # Generate the figure **without using pyplot**.
-    fig = Figure()
-    ax = fig.subplots()
-    ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
-    ax.set_xticks(independent_variables)
-    ax.set_xticklabels(independent_variables, rotation=30, ha='right')
-    fig.tight_layout()
-
-    # Save it to a temporary buffer.
-    buf = BytesIO()
-    fig.savefig(buf, format="png")
-    feature_imp_plot = base64.b64encode(bytes(buf.getbuffer())).decode("ascii")
+    fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    feature_imp_plot = plotting.figure_to_base64(fig)
 
     return_dict = {"r2_score": r2}
     return_dict.update({"mae": mean_absolute})

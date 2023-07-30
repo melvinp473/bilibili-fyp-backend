@@ -5,7 +5,10 @@ from sklearn.impute import SimpleImputer
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import mutual_info_regression, r_regression, f_regression, mutual_info_classif, chi2, \
     f_classif
-
+from sklearn.linear_model import LinearRegression
+from sklearn import neighbors
+from sklearn.feature_selection import SequentialFeatureSelector
+from sklearn.feature_selection import RFE
 from src.db import mongo_db_function
 
 
@@ -262,7 +265,7 @@ def label(dataset_id, variables):
     mongo_db_function.insert_dataset(collection, documents)
 
 
-def k_selection(dataset_id, k, regression_type, target_attribute):
+def k_selection(dataset_id, k, selection_type, target_attribute):
     db = mongo_db_function.get_database('FIT4701')
     collection = mongo_db_function.get_collection(db, "Data")
     input_ = {"DATASET_ID": dataset_id}
@@ -277,22 +280,22 @@ def k_selection(dataset_id, k, regression_type, target_attribute):
 
     regr = ""
     ret_arr = []
-    if regression_type == "mutual_info_regression":
+    if selection_type == "mutual_info_regression":
         regr = mutual_info_regression
 
-    elif regression_type == "r_regression":
+    elif selection_type == "r_regression":
         regr = r_regression
 
-    elif regression_type == "f_regression":
+    elif selection_type == "f_regression":
         regr = f_regression
 
-    elif regression_type == "chi2":
+    elif selection_type == "chi2":
         regr = chi2
 
-    elif regression_type == "mutual_info_classif":
+    elif selection_type == "mutual_info_classif":
         regr = mutual_info_classif
 
-    elif regression_type == "f_classif":
+    elif selection_type == "f_classif":
         regr = f_classif
 
     selector = SelectKBest(regr, k=k)
@@ -304,6 +307,45 @@ def k_selection(dataset_id, k, regression_type, target_attribute):
         ret_arr.append((selection[i], scores[i]))
 
     return ret_arr
+
+
+def wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator_type, estimator_params, model):
+    db = mongo_db_function.get_database('FIT4701')
+    collection = mongo_db_function.get_collection(db, "Data")
+    input_ = {"DATASET_ID": dataset_id}
+    store = mongo_db_function.get_by_query(collection, input_, "DATASET_ID")
+
+    df = pd.DataFrame(data=store)
+    df = df.drop('DATASET_ID', axis=1)
+    df = df.drop('_id', axis=1)
+
+    x = df.drop(target_attribute, axis=1)
+    y = df[target_attribute]
+
+    estimator = ""
+
+    if estimator_type == "lin_regr":
+        estimator = LinearRegression()
+
+    elif estimator_type == "knn":
+        if model == "classification":
+            estimator = neighbors.KNeighborsClassifier(**estimator_params)
+        elif model == "regression":
+            estimator = neighbors.KNeighborsRegressor(**estimator_params)
+
+    if selection_type == "sfs":
+        sfs = SequentialFeatureSelector(estimator, n_features_to_select=k)
+        sfs.fit_transform(x, y)
+        attributes = x.columns[sfs.get_support()]
+
+        return list(attributes)
+
+    elif selection_type == "rfe":
+        rfe = RFE(estimator, n_features_to_select=k)
+        rfe.fit_transform(x, y)
+        attributes = x.columns[rfe.get_support()]
+
+        return list(attributes)
 
 # label({"DATASET_ID": "6489def06240641623711ca0"})
 # print(k_selection("6491a29f8ec5697220711e44", 5, "f_regression", "STROKE"))
