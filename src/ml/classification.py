@@ -54,25 +54,19 @@ def decision_trees_classification(path: str, target_variable: str, independent_v
     cm_plot = plotting.figure_to_base64(fig_cm)
 
     auc = roc_auc_score(test_y, test_y_auc)
-    formatted_auc = "{:.4f}".format(auc)
     precision = precision_score(test_y, test_y_)
-    formatted_precision = "{:.4f}".format(precision)
     accuracy = accuracy_score(test_y, test_y_.round())
-    formatted_accuracy = "{:.4f}".format(accuracy)
     recall = recall_score(test_y, test_y_, average='weighted')
-    formatted_recall = "{:.4f}".format(recall)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    formatted_specificity = "{:.4f}".format(specificity)
     f1 = f1_score(test_y, test_y_, average='weighted')
-    formatted_f1 = "{:.4f}".format(f1)
 
-    return_dict = {"auc": formatted_auc}
-    return_dict.update({"precision": formatted_precision})
-    return_dict.update({"accuracy": formatted_accuracy})
-    return_dict.update({"recall": formatted_recall})
-    return_dict.update({"specificity": formatted_specificity})
-    return_dict.update({"f1": formatted_f1})
+    return_dict = {"auc": auc}
+    return_dict.update({"precision": precision})
+    return_dict.update({"accuracy": accuracy})
+    return_dict.update({"recall": recall})
+    return_dict.update({"specificity": specificity})
+    return_dict.update({"f1": f1})
     return_dict.update({"roc_plot": roc_plot})
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
@@ -119,30 +113,31 @@ def random_forest_classification(path: str, target_variable: str, independent_va
     fig_cm = cm_disp.figure_
     cm_plot = plotting.figure_to_base64(fig_cm)
 
+    print(test_y_)
     auc = roc_auc_score(test_y, test_y_auc)
-    formatted_auc = "{:.4f}".format(auc)
+    print("AUC-ROC:", auc)
     precision = precision_score(test_y, test_y_)
-    formatted_precision = "{:.4f}".format(precision)
+    print("Precision:", precision)
     accuracy = accuracy_score(test_y, test_y_.round())
-    formatted_accuracy = "{:.4f}".format(accuracy)
+    print("Accuracy:", accuracy)
     recall = recall_score(test_y, test_y_, average='weighted')
-    formatted_recall = "{:.4f}".format(recall)
+    print("Recall:", recall)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    formatted_specificity = "{:.4f}".format(specificity)
+    print("Specificity:", specificity)
     f1 = f1_score(test_y, test_y_, average='weighted')
-    formatted_f1 = "{:.4f}".format(f1)
+    print("f1_score:", f1)
 
-    return_dict = {"auc": formatted_auc}
-    return_dict.update({"precision": formatted_precision})
-    return_dict.update({"accuracy": formatted_accuracy})
-    return_dict.update({"recall": formatted_recall})
-    return_dict.update({"specificity": formatted_specificity})
-    return_dict.update({"f1": formatted_f1})
+    return_dict = {"auc": auc}
+    return_dict.update({"precision": precision})
+    return_dict.update({"accuracy": accuracy})
+    return_dict.update({"recall": recall})
+    return_dict.update({"specificity": specificity})
+    return_dict.update({"f1": f1})
     return_dict.update({"roc_plot": roc_plot})
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
-    # return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"feature_imp_plot": feature_imp_plot})
     return return_dict
 
 
@@ -181,30 +176,30 @@ def k_nearest_neighbor_classification(path: str, target_variable: str, independe
     fig_cm = cm_disp.figure_
     cm_plot = plotting.figure_to_base64(fig_cm)
 
+    print(test_y_)
     auc = roc_auc_score(test_y, test_y_auc)
-    formatted_auc = "{:.4f}".format(auc)
+    print("AUC-ROC:", auc)
     precision = precision_score(test_y, test_y_)
-    formatted_precision = "{:.4f}".format(precision)
+    print("Precision:", precision)
     accuracy = accuracy_score(test_y, test_y_.round())
-    formatted_accuracy = "{:.4f}".format(accuracy)
+    print("Accuracy:", accuracy)
     recall = recall_score(test_y, test_y_, average='weighted')
-    formatted_recall = "{:.4f}".format(recall)
+    print("Recall:", recall)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    formatted_specificity = "{:.4f}".format(specificity)
+    print("Specificity:", specificity)
     f1 = f1_score(test_y, test_y_, average='weighted')
-    formatted_f1 = "{:.4f}".format(f1)
+    print("f1_score:", f1)
 
-    return_dict = {"auc": formatted_auc}
-    return_dict.update({"precision": formatted_precision})
-    return_dict.update({"accuracy": formatted_accuracy})
-    return_dict.update({"recall": formatted_recall})
-    return_dict.update({"specificity": formatted_specificity})
-    return_dict.update({"f1": formatted_f1})
+    return_dict = {"auc": auc}
+    return_dict.update({"precision": precision})
+    return_dict.update({"accuracy": accuracy})
+    return_dict.update({"recall": recall})
+    return_dict.update({"specificity": specificity})
+    return_dict.update({"f1": f1})
     return_dict.update({"roc_plot": roc_plot})
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
-    # return_dict.update({"feature_imp_plot": feature_imp_plot})
     return return_dict
 
 
@@ -243,30 +238,30 @@ def gaussian_naive_bayes(path: str, target_variable: str, independent_variables:
     cm_plot = plotting.figure_to_base64(fig_cm)
 
     auc = roc_auc_score(test_y, test_y_auc)
-    formatted_auc = "{:.4f}".format(auc)
+    print("AUC-ROC:", auc)
     precision = precision_score(test_y, test_y_)
-    formatted_precision = "{:.4f}".format(precision)
+    print("Precision:", precision)
     accuracy = accuracy_score(test_y, test_y_.round())
-    formatted_accuracy = "{:.4f}".format(accuracy)
+    print("Accuracy:", accuracy)
     recall = recall_score(test_y, test_y_, average='weighted')
-    formatted_recall = "{:.4f}".format(recall)
+    print("Recall:", recall)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    formatted_specificity = "{:.4f}".format(specificity)
+    print("Specificity:", specificity)
     f1 = f1_score(test_y, test_y_, average='weighted')
-    formatted_f1 = "{:.4f}".format(f1)
+    print("f1_score:", f1)
 
-    return_dict = {"auc": formatted_auc}
-    return_dict.update({"precision": formatted_precision})
-    return_dict.update({"accuracy": formatted_accuracy})
-    return_dict.update({"recall": formatted_recall})
-    return_dict.update({"specificity": formatted_specificity})
-    return_dict.update({"f1": formatted_f1})
+    return_dict = {"auc": auc}
+    return_dict.update({"precision": precision})
+    return_dict.update({"accuracy": accuracy})
+    return_dict.update({"recall": recall})
+    return_dict.update({"specificity": specificity})
+    return_dict.update({"f1": f1})
     return_dict.update({"roc_plot": roc_plot})
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
-    # return_dict.update({"feature_imp_plot": feature_imp_plot})
     return return_dict
+
 
 def voting_cls(path: str, target_variable: str, independent_variables: list, algo_params: dict):
     df = pd.read_csv(path)
@@ -330,42 +325,28 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     cm_plot = plotting.figure_to_base64(fig_cm)
 
     auc = roc_auc_score(test_y, test_y_auc)
-    formatted_auc = "{:.4f}".format(auc)
+    print("AUC-ROC:", auc)
     precision = precision_score(test_y, test_y_)
-    formatted_precision = "{:.4f}".format(precision)
+    print("Precision:", precision)
     accuracy = accuracy_score(test_y, test_y_.round())
-    formatted_accuracy = "{:.4f}".format(accuracy)
+    print("Accuracy:", accuracy)
     recall = recall_score(test_y, test_y_, average='weighted')
-    formatted_recall = "{:.4f}".format(recall)
+    print("Recall:", recall)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    formatted_specificity = "{:.4f}".format(specificity)
+    print("Specificity:", specificity)
     f1 = f1_score(test_y, test_y_, average='weighted')
-    formatted_f1 = "{:.4f}".format(f1)
+    print("f1_score:", f1)
 
-    return_dict = {"auc": formatted_auc}
-    return_dict.update({"precision": formatted_precision})
-    return_dict.update({"accuracy": formatted_accuracy})
-    return_dict.update({"recall": formatted_recall})
-    return_dict.update({"specificity": formatted_specificity})
-    return_dict.update({"f1": formatted_f1})
+    return_dict = {"auc": auc}
+    return_dict.update({"precision": precision})
+    return_dict.update({"accuracy": accuracy})
+    return_dict.update({"recall": recall})
+    return_dict.update({"specificity": specificity})
+    return_dict.update({"f1": f1})
     return_dict.update({"roc_plot": roc_plot})
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
-    # return_dict.update({"feature_imp_plot": feature_imp_plot})
     return return_dict
 
-# if __name__ == '__main__':
-#     results = gaussian_naive_bayes(
-#         'C:\\Users\kohji\PycharmProjects\\bilibili-fyp-backend\\test\Default MLDATA CLS (normalized)(1).csv',
-#         'risk_levels',
-#         ['SMOKING', 'OBESITY', 'DRINKING', 'UNEMPLOYMENT', 'DIABETES', 'MENTAL_DISEASE', 'PSYCHOLOGICAL_DISTRESS',
-#          'HYPERTENSION'])
-#
-#     print(results)
 
-
-# path = "C:\Default MLDATA CLS (normalized).csv"
-# target_variable = 'risk_levels'
-# independent_variables = ['SMOKING','OBESITY']
-# random_forest_classification(path,target_variable,independent_variables)
