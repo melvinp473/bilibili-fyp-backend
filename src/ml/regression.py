@@ -43,6 +43,8 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
     return_dict.update({"media_absolute": media_absolute})
     return_dict.update({"max_error": max_error})
     return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
     return return_dict
 
 
