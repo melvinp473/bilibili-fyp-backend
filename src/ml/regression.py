@@ -47,7 +47,7 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
 
 
 def support_vector_machines(path: str, target_variable: str, independent_variables: list):
-    df = pd.read_csv(path)
+    df = pd.read_csv(path)   #change
     x = df[independent_variables]
     y = df[[target_variable]]
     regr = svm.SVR(kernel="linear", C=100, gamma="auto")

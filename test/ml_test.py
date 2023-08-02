@@ -2,7 +2,7 @@ import unittest
 
 from flask import app
 
-from src.ml.machine_learning import *
+from src.ml.regression import *
 
 
 class TestMachineLearning(unittest.TestCase):

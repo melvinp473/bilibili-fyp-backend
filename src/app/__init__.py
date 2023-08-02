@@ -10,7 +10,7 @@ from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 import numpy as np
 from ..db import mongo_db_function
-from ..ml import machine_learning, preprocessing, classification
+from ..ml import regression, preprocessing, classification
 
 
 def create_app(debug=False):
@@ -72,6 +72,9 @@ def create_app(debug=False):
         store = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
         path = mongo_db_function.list_to_csv(store)
 
+        #split file
+
+
         algo = request_json["algo_name"]
         independent_variables = request_json["independent_variables"]
         target_variable = request_json["target_variable"]
@@ -83,19 +86,19 @@ def create_app(debug=False):
             return_dict = ""
 
             if algo == "linear_regr":
-                return_dict = machine_learning.linear_regression(path, target_variable, independent_variables)
+                return_dict = regression.linear_regression(path, target_variable, independent_variables)
             elif algo == "decision_trees_regr":
-                return_dict = machine_learning.decision_trees(path, target_variable, independent_variables, algo_params)
+                return_dict = regression.decision_trees(path, target_variable, independent_variables, algo_params)
             elif algo == "svm_regr":
-                return_dict = machine_learning.support_vector_machines(path, target_variable, independent_variables)
+                return_dict = regression.support_vector_machines(path, target_variable, independent_variables)
             elif algo == "knn_regr":
-                return_dict = machine_learning.kth_nearest_neighbors(path, target_variable, independent_variables, algo_params)
+                return_dict = regression.kth_nearest_neighbors(path, target_variable, independent_variables, algo_params)
             elif algo == "random_forest_regr":
-                return_dict = machine_learning.random_forest(path, target_variable, independent_variables, algo_params)
+                return_dict = regression.random_forest(path, target_variable, independent_variables, algo_params)
             elif algo == "bagging_regr":
-                return_dict = machine_learning.bagging_regr(path, target_variable, independent_variables, algo_params)
+                return_dict = regression.bagging_regr(path, target_variable, independent_variables, algo_params)
             elif algo == "voting_regr":
-                return_dict = machine_learning.voting_regressor(path, target_variable, independent_variables, algo_params)
+                return_dict = regression.voting_regressor(path, target_variable, independent_variables, algo_params)
             elif algo == "decision_trees_cls":
                 return_dict = classification.decision_trees_classification(path, target_variable, independent_variables, algo_params)
             elif algo == "random_forest_cls":
