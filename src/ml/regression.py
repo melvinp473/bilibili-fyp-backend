@@ -115,7 +115,7 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
     # Feature importance chart
-    importance_values = regr.feature_importances_
+    importance_values = regr.feature_importances_.tolist()
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
     feature_imp_plot = plotting.figure_to_base64(fig)
 
@@ -257,7 +257,7 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
     # Feature importance chart
-    importance_values = regr.feature_importances_
+    importance_values = regr.feature_importances_.tolist()
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
     feature_imp_plot = plotting.figure_to_base64(fig)
 
