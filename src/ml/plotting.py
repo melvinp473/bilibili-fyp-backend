@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 def figure_to_base64(figure):
     buffer = BytesIO()
     figure.savefig(buffer, format='png')
-    plot_roc_data = b64encode(buffer.getvalue()).decode()
+    plot_as_base64 = b64encode(buffer.getvalue()).decode()
     buffer.close()
-    return plot_roc_data
+    return plot_as_base64
 
 
 def plot_importance_figure(importance_values, independent_variables):

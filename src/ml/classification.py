@@ -280,14 +280,14 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     voting_params = {key: value for key, value in algo_params["voting_params"].items() if
                      value is not None and value != ''}
 
-    estimator_counts = {'tree': 0, 'knn': 0, 'random_forest': 0, 'gaussian_nb': 0}
+    estimator_counts = {'trees': 0, 'knn': 0, 'random_forest': 0, 'gaussian_nb': 0}
 
     for estimator_i_params in algo_params["estimators_list"]:
         estimator_params = {key: value for key, value in estimator_i_params["algo_params"].items() if
                             value is not None and value != ''}
         if estimator_i_params['algo_id'] == 'decision_trees_cls':
-            estimator_counts['tree'] += 1
-            estimator = ('tree_' + str(estimator_counts['tree']), tree.DecisionTreeClassifier(**estimator_params))
+            estimator_counts['trees'] += 1
+            estimator = ('trees_' + str(estimator_counts['trees']), tree.DecisionTreeClassifier(**estimator_params))
         elif estimator_i_params['algo_id'] == 'knn_cls':
             estimator_counts['knn'] += 1
             estimator = ('knn_' + str(estimator_counts['knn']), RadiusNeighborsClassifier(**estimator_params))
@@ -304,20 +304,8 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     clf = VotingClassifier(estimators, **voting_params)
     clf.fit(train_x, train_y)
     test_y_ = clf.predict(test_x)
-    test_y_auc = clf.predict_proba(test_x)[:, 1]
 
-    print("---------------------------------------------------------------------")
-
-    # ROC Curve
-    roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
-    fig_roc = roc_disp.figure_
-    roc_plot = plotting.figure_to_base64(fig_roc)
-
-    # Precision Recall Curve
-    precision, recall, _ = precision_recall_curve(test_y, test_y_)
-    pr_disp = PrecisionRecallDisplay.from_estimator(clf, test_x, test_y)
-    fig_pr = pr_disp.figure_
-    pr_plot = plotting.figure_to_base64(fig_pr)
+    auc, roc_plot, pr_plot, cm_plot = None, None, None, None
 
     # Confusion Matrix
     cm = confusion_matrix(test_y, test_y_)
@@ -325,10 +313,46 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     fig_cm = cm_disp.figure_
     cm_plot = plotting.figure_to_base64(fig_cm)
 
-    auc = roc_auc_score(test_y, test_y_auc)
-    print("AUC-ROC:", auc)
-    precision = precision_score(test_y, test_y_)
-    print("Precision:", precision)
+    if voting_params["voting"] == "soft":
+        test_y_auc = clf.predict_proba(test_x)[:, 1]
+
+        # ROC Curve
+        roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
+        fig_roc = roc_disp.figure_
+        roc_plot = plotting.figure_to_base64(fig_roc)
+
+        # Precision Recall Curve
+        precision, recall, _ = precision_recall_curve(test_y, test_y_)
+        pr_disp = PrecisionRecallDisplay.from_estimator(clf, test_x, test_y)
+        fig_pr = pr_disp.figure_
+        pr_plot = plotting.figure_to_base64(fig_pr)
+
+        auc = roc_auc_score(test_y, test_y_auc)
+        print("AUC-ROC:", auc)
+
+    estimator_results = []
+
+    for name, estimator in clf.named_estimators_.items():
+
+        est_test_y_ = estimator.predict(test_x)
+
+        cm = confusion_matrix(test_y, est_test_y_)
+        tn, fp, fn, tp = cm.ravel()
+        specificity = tn / (tn + fp)
+
+        estimator_result_dict = {
+            "est_name": name,
+            "accuracy": accuracy_score(test_y, est_test_y_),
+            "recall": recall_score(test_y, est_test_y_),
+            "specificity": specificity,
+        }
+
+        if voting_params["voting"] == "soft":
+            est_test_y_auc = estimator.predict_proba(test_x)[:, 1]
+            estimator_result_dict.update({"auc": roc_auc_score(test_y, est_test_y_auc)})
+
+        estimator_results.append(estimator_result_dict)
+
     accuracy = accuracy_score(test_y, test_y_.round())
     print("Accuracy:", accuracy)
     recall = recall_score(test_y, test_y_, average='weighted')
@@ -340,7 +364,6 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     print("f1_score:", f1)
 
     return_dict = {"auc": auc}
-    return_dict.update({"precision": precision})
     return_dict.update({"accuracy": accuracy})
     return_dict.update({"recall": recall})
     return_dict.update({"specificity": specificity})
@@ -348,6 +371,7 @@ def voting_cls(path: str, target_variable: str, independent_variables: list, alg
     return_dict.update({"roc_plot": roc_plot})
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
+    return_dict.update({"estimator_results": estimator_results})
     return return_dict
 
 
