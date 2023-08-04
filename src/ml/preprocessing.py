@@ -33,19 +33,28 @@ def imputation(dataset_id, strategy_type, variables):
     # df = df.replace(None, np.nan)
 
     # arr = df.values
+    df_temp = pd.DataFrame()
+    for variable in variables:
+        df_temp[variable] = df[variable]
+
     imp_mean = SimpleImputer(missing_values=np.nan, strategy=strategy_type)
-    df_temp = pd.DataFrame(data=imp_mean.fit_transform(df), columns=keys)
+    df_temp = pd.DataFrame(data=imp_mean.fit_transform(df_temp), columns=keys)
+
+    # for variable in variables:
+    #     df_new[variable] = df_temp[variable]
 
     for variable in variables:
-        df_new[variable] = df_temp[variable]
+        df[variable] = df_temp[variable]
+    arr_new = df.values
     documents = []
-    arr_new = df_new.values
+    # arr_new = df_new.values
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
         documents.append(temp_dict)
+
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     print(documents[0])
     mongo_db_function.insert_dataset(collection, documents)
