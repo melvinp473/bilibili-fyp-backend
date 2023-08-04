@@ -153,7 +153,7 @@ def create_app(debug=False):
         dataset = request.files['dataset']
         dataset.save(dataset.filename)
 
-        # get attribute(column) names
+        # get attribute(column) names and shorten them
         with open(dataset.filename, 'r') as csvfile:
             reader = csv.reader(csvfile)
 
@@ -382,6 +382,8 @@ def create_app(debug=False):
 
 
 def convert_to_numeric(value):
+    if value == "":
+        return None
     try:
         return int(value)
     except ValueError:
@@ -389,3 +391,4 @@ def convert_to_numeric(value):
             return float(value)
         except ValueError:
             return value
+
