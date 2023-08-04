@@ -72,15 +72,15 @@ def create_app(debug=False):
         store = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
         path = mongo_db_function.list_to_csv(store)
 
-        #split file
-
+        # split file
 
         algo = request_json["algo_name"]
         independent_variables = request_json["independent_variables"]
         target_variable = request_json["target_variable"]
         try:
             if algo not in ['voting_regr', 'voting_cls']:
-                algo_params = {key: value for key, value in request_json["algo_params"].items() if value is not None and value != ''}
+                algo_params = {key: value for key, value in request_json["algo_params"].items() if
+                               value is not None and value != ''}
             else:
                 algo_params = request_json["algo_params"]
             return_dict = ""
@@ -92,7 +92,8 @@ def create_app(debug=False):
             elif algo == "svm_regr":
                 return_dict = regression.support_vector_machines(path, target_variable, independent_variables)
             elif algo == "knn_regr":
-                return_dict = regression.kth_nearest_neighbors(path, target_variable, independent_variables, algo_params)
+                return_dict = regression.kth_nearest_neighbors(path, target_variable, independent_variables,
+                                                               algo_params)
             elif algo == "random_forest_regr":
                 return_dict = regression.random_forest(path, target_variable, independent_variables, algo_params)
             elif algo == "bagging_regr":
@@ -100,11 +101,14 @@ def create_app(debug=False):
             elif algo == "voting_regr":
                 return_dict = regression.voting_regressor(path, target_variable, independent_variables, algo_params)
             elif algo == "decision_trees_cls":
-                return_dict = classification.decision_trees_classification(path, target_variable, independent_variables, algo_params)
+                return_dict = classification.decision_trees_classification(path, target_variable, independent_variables,
+                                                                           algo_params)
             elif algo == "random_forest_cls":
-                return_dict = classification.random_forest_classification(path, target_variable, independent_variables, algo_params)
+                return_dict = classification.random_forest_classification(path, target_variable, independent_variables,
+                                                                          algo_params)
             elif algo == "knn_cls":
-                return_dict = classification.k_nearest_neighbor_classification(path, target_variable, independent_variables, algo_params)
+                return_dict = classification.k_nearest_neighbor_classification(path, target_variable,
+                                                                               independent_variables, algo_params)
             elif algo == "gauss_naive_bayes_cls":
                 return_dict = classification.gaussian_naive_bayes(path, target_variable, independent_variables)
             elif algo == "voting_cls":
@@ -144,59 +148,66 @@ def create_app(debug=False):
 
     @application.route('/upload-dataset', methods=['POST'])
     def upload_dataset():
-        user_id = request.form['user_id']
-        f = request.files['dataset']
-        f.save(f.filename)
-        with open(f.filename, 'r') as csvfile:
+        max_col_length = 15
+
+        dataset = request.files['dataset']
+        dataset.save(dataset.filename)
+
+        # get attribute(column) names
+        with open(dataset.filename, 'r') as csvfile:
             reader = csv.reader(csvfile)
 
-            columns = next(reader)
-            attr_cols = []
-            for col in columns:
-                attr_cols.append(col[0:15])
+            attributes = next(reader)
+            temp_attributes = []
+            for attribute in attributes:
+                temp_attributes.append(attribute[0:max_col_length])
 
-            print(attr_cols)
-
-        db = mongo_db_function.get_database('FIT4701')
-        collection = mongo_db_function.get_collection(db, "Dataset")
+            attributes = temp_attributes
 
         data = {
-            "name": f.filename.split('.')[0],
-            "user_id": user_id,
+            "name": dataset.filename.split('.')[0],
+            "user_id": request.form['user_id'],
             "status": "ACTIVE",
             "create_date": datetime.now(),
             "update_date": datetime.now(),
-            "attributes": attr_cols
+            "attributes": attributes
         }
 
-        result = collection.insert_one(data)
-        print("Inserted ID:", result.inserted_id)
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Dataset")
+        dataset_doc_insert_result = collection.insert_one(data)
+        dataset_doc_id = str(dataset_doc_insert_result.inserted_id)
+
+        # create new Data documents
+        with open(dataset.filename, 'r') as csvfile:
+            reader = csv.DictReader(csvfile)
+            reader.fieldnames = attributes
+
+            # Skip the first row (header row) in the CSV
+            next(reader)
+
+            data_rows = []
+            for line in reader:
+                row = {}
+                for key, value in line.items():
+                    row[key] = convert_to_numeric(value)
+                row["DATASET_ID"] = dataset_doc_id
+                data_rows.append(row)
 
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
-        csvfile = open(f.filename, 'r')
-        reader = csv.DictReader(csvfile)
+        data_doc_insert_result = collection.insert_many(data_rows)
 
-        data_rows = []
-        for line in reader:
-            row = {}
-            for col in columns:
-                row[col[0:15]] = line[col]
-            id = str(result.inserted_id)
-            row["DATASET_ID"] = id
-            print(row)
-            data_rows.append(row)
-
-        insert_result = collection.insert_many(data_rows)
-        if insert_result.acknowledged:
-            response = "successfully uploaded " + f.filename
+        if data_doc_insert_result.acknowledged:
+            response = "successfully uploaded " + dataset.filename
             flag = True
         else:
             response = "Error when inserting data to database"
             flag = False
-        return jsonify({'response': response,
-                        'flag': flag
-                        })
+        return jsonify({
+            'response': response,
+            'flag': flag
+        })
 
     @application.route('/preprocessing', methods=['POST'])
     def do_preprocessing():
@@ -368,3 +379,13 @@ def create_app(debug=False):
     #     return jsonify({'attributes': response})
 
     return application
+
+
+def convert_to_numeric(value):
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
