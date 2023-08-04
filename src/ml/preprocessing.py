@@ -23,11 +23,6 @@ def imputation(dataset_id, strategy_type, variables):
     keys.remove("DATASET_ID")
 
     dataset_id_val = store[0].get('DATASET_ID')
-    # for item in store:
-    #     item.pop('DATASET_ID')
-    #     item.pop('_id')
-    #     values = list(item.values())
-    #     db_data.append(values)
 
     df = pd.DataFrame(data=store)
     df = df.drop('DATASET_ID', axis=1)
@@ -35,7 +30,7 @@ def imputation(dataset_id, strategy_type, variables):
     df_new = df
 
     # df = pd.DataFrame(data=db_data)
-    df = df.replace("", np.nan)
+    # df = df.replace(None, np.nan)
 
     # arr = df.values
     imp_mean = SimpleImputer(missing_values=np.nan, strategy=strategy_type)
