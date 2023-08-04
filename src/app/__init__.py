@@ -70,7 +70,8 @@ def create_app(debug=False):
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
         store = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
-        path = mongo_db_function.list_to_csv(store)
+        # path = mongo_db_function.list_to_csv(store)
+        df = mongo_db_function.list_to_pd(store)
 
         # split file
 
@@ -101,7 +102,7 @@ def create_app(debug=False):
             elif algo == "voting_regr":
                 return_dict = regression.voting_regressor(path, target_variable, independent_variables, algo_params)
             elif algo == "decision_trees_cls":
-                return_dict = classification.decision_trees_classification(path, target_variable, independent_variables,
+                return_dict = classification.decision_trees_classification(df, target_variable, independent_variables,
                                                                            algo_params)
             elif algo == "random_forest_cls":
                 return_dict = classification.random_forest_classification(path, target_variable, independent_variables,

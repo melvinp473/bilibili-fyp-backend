@@ -14,9 +14,8 @@ from sklearn.metrics import f1_score
 from . import plotting
 
 
-def decision_trees_classification(pdd, path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    pdd = pdd
-    df = pd.read_csv(path)
+def decision_trees_classification(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
     x = df[independent_variables]
     y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
