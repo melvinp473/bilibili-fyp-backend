@@ -115,7 +115,7 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
     # Feature importance chart
-    importance_values = regr.feature_importances_
+    importance_values = regr.feature_importances_.tolist()
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
     feature_imp_plot = plotting.figure_to_base64(fig)
 
@@ -128,6 +128,8 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     return_dict.update({"media_absolute": media_absolute})
     return_dict.update({"max_error": max_error})
     return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
 
     return return_dict
 
@@ -255,7 +257,7 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
     # Feature importance chart
-    importance_values = regr.feature_importances_
+    importance_values = regr.feature_importances_.tolist()
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
     feature_imp_plot = plotting.figure_to_base64(fig)
 
@@ -268,6 +270,8 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     return_dict.update({"media_absolute": media_absolute})
     return_dict.update({"max_error": max_error})
     return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
 
     return return_dict
 
