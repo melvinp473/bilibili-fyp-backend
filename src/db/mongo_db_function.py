@@ -106,6 +106,15 @@ def list_to_csv(list: list):
         writer.writerows(list)
     return file_path
 
+def list_to_pd(list: list):
+
+    for i in list:
+        i.pop('_id')
+        i.pop('DATASET_ID')
+    df = pd.DataFrame(list)
+    print(df.dtypes)
+    return df
+
 def csv_to_arff(file_path):
     csv = pd.read_csv(file_path)
     current_dir = os.getcwd()
