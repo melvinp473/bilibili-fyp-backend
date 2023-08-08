@@ -91,15 +91,9 @@ def create_app(debug=False):
 
             split_datasets = [split_dict[key] for key in split_dict]
 
-            #[[][][]]
-
-            # df = mongo_db_function.list_to_df(split_datasets)
-
 
         else:
-            #[[]]
             split_datasets = [store]
-            # df = mongo_db_function.list_to_df(store)
         for split_data in split_datasets:
             df = mongo_db_function.list_to_df(split_data)
             try:
@@ -173,131 +167,137 @@ def create_app(debug=False):
 
     @application.route('/upload-dataset', methods=['POST'])
     def upload_dataset():
-        max_col_length = 15
+        try:
+            max_col_length = 15
 
-        dataset = request.files['dataset']
-        dataset.save(dataset.filename)
+            dataset = request.files['dataset']
+            dataset.save(dataset.filename)
 
-        # get attribute(column) names and shorten them
-        with open(dataset.filename, 'r') as csvfile:
-            reader = csv.reader(csvfile)
+            # get attribute(column) names and shorten them
+            with open(dataset.filename, 'r') as csvfile:
+                reader = csv.reader(csvfile)
 
-            attributes = next(reader)
-            temp_attributes = []
-            for attribute in attributes:
-                temp_attributes.append(attribute[0:max_col_length])
+                attributes = next(reader)
+                temp_attributes = []
+                for attribute in attributes:
+                    temp_attributes.append(attribute[0:max_col_length])
 
-            attributes = temp_attributes
+                attributes = temp_attributes
 
-        data = {
-            "name": dataset.filename.split('.')[0],
-            "user_id": request.form['user_id'],
-            "status": "ACTIVE",
-            "create_date": datetime.now(),
-            "update_date": datetime.now(),
-            "attributes": attributes
-        }
+            data = {
+                "name": dataset.filename.split('.')[0],
+                "user_id": request.form['user_id'],
+                "status": "ACTIVE",
+                "create_date": datetime.now(),
+                "update_date": datetime.now(),
+                "attributes": attributes
+            }
 
-        db = mongo_db_function.get_database('FIT4701')
-        collection = mongo_db_function.get_collection(db, "Dataset")
-        dataset_doc_insert_result = collection.insert_one(data)
-        dataset_doc_id = str(dataset_doc_insert_result.inserted_id)
+            db = mongo_db_function.get_database('FIT4701')
+            collection = mongo_db_function.get_collection(db, "Dataset")
+            dataset_doc_insert_result = collection.insert_one(data)
+            dataset_doc_id = str(dataset_doc_insert_result.inserted_id)
 
-        # create new Data documents
-        with open(dataset.filename, 'r') as csvfile:
-            reader = csv.DictReader(csvfile)
-            reader.fieldnames = attributes
+            # create new Data documents
+            with open(dataset.filename, 'r') as csvfile:
+                reader = csv.DictReader(csvfile)
+                reader.fieldnames = attributes
 
-            # Skip the first row (header row) in the CSV
-            next(reader)
+                # Skip the first row (header row) in the CSV
+                next(reader)
 
-            data_rows = []
-            for line in reader:
-                row = {}
-                for key, value in line.items():
-                    row[key] = convert_to_numeric(value)
-                row["DATASET_ID"] = dataset_doc_id
-                data_rows.append(row)
+                data_rows = []
+                for line in reader:
+                    row = {}
+                    for key, value in line.items():
+                        row[key] = convert_to_numeric(value)
+                    row["DATASET_ID"] = dataset_doc_id
+                    data_rows.append(row)
 
-        db = mongo_db_function.get_database('FIT4701')
-        collection = mongo_db_function.get_collection(db, "Data")
-        data_doc_insert_result = collection.insert_many(data_rows)
+            db = mongo_db_function.get_database('FIT4701')
+            collection = mongo_db_function.get_collection(db, "Data")
+            data_doc_insert_result = collection.insert_many(data_rows)
 
-        if data_doc_insert_result.acknowledged:
-            response = "successfully uploaded " + dataset.filename
-            flag = True
-        else:
-            response = "Error when inserting data to database"
-            flag = False
-        return jsonify({
-            'response': response,
-            'flag': flag
-        })
+            if data_doc_insert_result.acknowledged:
+                response = "successfully uploaded " + dataset.filename
+                flag = True
+            else:
+                response = "Error when inserting data to database"
+                flag = False
+            response =  jsonify({
+                'response': response,
+                'flag': flag
+            })
+        except BaseException as e:
+            e = str(e)
+            return_dict = {'error': e}
+            response = jsonify(return_dict)
+
+        return response
 
     @application.route('/preprocessing', methods=['POST'])
     def do_preprocessing():
-        request_json = request.get_json()
-        dataset_id = request_json['DATASET_ID']
-        preprocessing_code = request_json['preprocessing_code']
-        # selected_variables = request_json['variables']
-        # print(selected_variables)
-        print(dataset_id)
-        input = {"DATASET_ID": dataset_id}
+        try:
+            request_json = request.get_json()
+            dataset_id = request_json['DATASET_ID']
+            preprocessing_code = request_json['preprocessing_code']
+            # selected_variables = request_json['variables']
+            # print(selected_variables)
+            print(dataset_id)
+            input = {"DATASET_ID": dataset_id}
 
-        flag = True
-        body = []
-        if preprocessing_code == 'mean imputation':
-            selected_variables = request_json['variables']
-            preprocessing.imputation(input, "mean", selected_variables)
-
-        elif preprocessing_code == 'median imputation':
-            selected_variables = request_json['variables']
-            preprocessing.imputation(input, "median", selected_variables)
-
-        elif preprocessing_code == 'label encoding':
-            selected_variables = request_json['variables']
-            preprocessing.label(input, selected_variables)
-
-        elif preprocessing_code == 'outlier':
-            selected_variables = request_json['variables']
-            preprocessing.outliers_removal(input, selected_variables)
-
-        elif preprocessing_code == 'select_k_best':
-            k = request_json['params']['k_best']
-            selection_type = request_json['params']['selection_type']
-            target_attribute = request_json['params']['target_attribute']
-            body = preprocessing.k_selection(dataset_id, k, selection_type, target_attribute)
-
-        elif preprocessing_code == 'wrapper':
-            k = request_json['params']['k_best']
-            selection_type = request_json['params']['selection_type']
-            target_attribute = request_json['params']['target_attribute']
-            estimator_type = request_json['params']['estimator_type']
-            estimator_params = request_json['params']['estimator_params']
-            model = request_json['params']['model']
-            body = preprocessing.wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator_type,
-                                                   estimator_params, model)
-
-        elif preprocessing_code == 'standardization':
-            try:
+            flag = True
+            body = []
+            if preprocessing_code == 'mean imputation':
                 selected_variables = request_json['variables']
-                preprocessing.standardization(input, selected_variables)
-            except ValueError as e:
-                print(e)
-                flag = False
-        elif preprocessing_code == 'normalization':
-            selected_variables = request_json['variables']
-            preprocessing.normalization(input, selected_variables)
+                preprocessing.imputation(input, "mean", selected_variables)
 
-            # db = mongo_db_function.get_database('FIT4701')
-            # collection = mongo_db_function.get_collection(db, "Data")
-            # list = mongo_db_function.get_by_query(collection, request_json, "DATASET_ID")
-            # r_data = {'data': list}
-            # print(r_data)
-            # response = jsonify(r_data)
-        response = {'flag': flag,
-                    'body': body}
-        response = jsonify(response)
+            elif preprocessing_code == 'median imputation':
+                selected_variables = request_json['variables']
+                preprocessing.imputation(input, "median", selected_variables)
+
+            elif preprocessing_code == 'label encoding':
+                selected_variables = request_json['variables']
+                preprocessing.label(input, selected_variables)
+
+            elif preprocessing_code == 'outlier':
+                selected_variables = request_json['variables']
+                preprocessing.outliers_removal(input, selected_variables)
+
+            elif preprocessing_code == 'select_k_best':
+                k = request_json['params']['k_best']
+                selection_type = request_json['params']['selection_type']
+                target_attribute = request_json['params']['target_attribute']
+                body = preprocessing.k_selection(dataset_id, k, selection_type, target_attribute)
+
+            elif preprocessing_code == 'wrapper':
+                k = request_json['params']['k_best']
+                selection_type = request_json['params']['selection_type']
+                target_attribute = request_json['params']['target_attribute']
+                estimator_type = request_json['params']['estimator_type']
+                estimator_params = request_json['params']['estimator_params']
+                model = request_json['params']['model']
+                body = preprocessing.wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator_type,
+                                                       estimator_params, model)
+
+            elif preprocessing_code == 'standardization':
+                try:
+                    selected_variables = request_json['variables']
+                    preprocessing.standardization(input, selected_variables)
+                except ValueError as e:
+                    print(e)
+                    flag = False
+            elif preprocessing_code == 'normalization':
+                selected_variables = request_json['variables']
+                preprocessing.normalization(input, selected_variables)
+            response = {'flag': flag,
+                        'body': body}
+            response = jsonify(response)
+
+        except BaseException as e:
+            e = str(e)
+            return_dict = {'error': e}
+            response = jsonify(return_dict)
 
         return response
 
