@@ -38,7 +38,7 @@ def imputation(dataset_id, strategy_type, variables):
         df_temp[variable] = df[variable]
 
     imp_mean = SimpleImputer(missing_values=np.nan, strategy=strategy_type)
-    df_temp = pd.DataFrame(data=imp_mean.fit_transform(df_temp), columns=keys)
+    df_temp = pd.DataFrame(data=imp_mean.fit_transform(df_temp), columns=variables)
 
     # for variable in variables:
     #     df_new[variable] = df_temp[variable]
