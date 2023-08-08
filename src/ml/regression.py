@@ -10,8 +10,8 @@ from src.ml import metric_cal
 from . import plotting
 
 
-def linear_regression(path: str, target_variable: str, independent_variables: list):
-    df = pd.read_csv(path)
+def linear_regression(dataframe, target_variable: str, independent_variables: list):
+    df = dataframe
     regr = linear_model.LinearRegression()
     x = df[independent_variables]
     y = df[[target_variable]]
@@ -48,8 +48,8 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
     return return_dict
 
 
-def support_vector_machines(path: str, target_variable: str, independent_variables: list):
-    df = pd.read_csv(path)   #change
+def support_vector_machines(dataframe, target_variable: str, independent_variables: list):
+    df = dataframe
     x = df[independent_variables]
     y = df[[target_variable]]
     regr = svm.SVR(kernel="linear", C=100, gamma="auto")
@@ -90,8 +90,8 @@ def support_vector_machines(path: str, target_variable: str, independent_variabl
     return return_dict
 
 
-def decision_trees(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def decision_trees(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     regr = tree.DecisionTreeRegressor(**algo_params)
     x = df[independent_variables]
@@ -134,9 +134,8 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     return return_dict
 
 
-def kth_nearest_neighbors(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
-
+def kth_nearest_neighbors(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
     regr = neighbors.KNeighborsRegressor(**algo_params)
     x = df[independent_variables]
     y = df[[target_variable]]
@@ -170,8 +169,8 @@ def kth_nearest_neighbors(path: str, target_variable: str, independent_variables
     return return_dict
 
 
-def voting_regressor(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def voting_regressor(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     x = df[independent_variables]
     y = df[[target_variable]]
@@ -227,8 +226,8 @@ def voting_regressor(path: str, target_variable: str, independent_variables: lis
     return return_dict
 
 
-def random_forest(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def random_forest(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     x = df[independent_variables]
     y = df[[target_variable]]
@@ -276,8 +275,8 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     return return_dict
 
 
-def bagging_regr(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def bagging_regr(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     x = df[independent_variables]
     y = df[[target_variable]]

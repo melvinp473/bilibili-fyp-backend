@@ -15,7 +15,10 @@ from . import plotting
 
 
 def decision_trees_classification(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+
     df = dataframe
+
+
     x = df[independent_variables]
     y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
@@ -74,8 +77,8 @@ def decision_trees_classification(dataframe, target_variable: str, independent_v
     return return_dict
 
 
-def random_forest_classification(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def random_forest_classification(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
     x = df[independent_variables]
     y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
@@ -141,8 +144,8 @@ def random_forest_classification(path: str, target_variable: str, independent_va
     return return_dict
 
 
-def k_nearest_neighbor_classification(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def k_nearest_neighbor_classification(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
     x = df[independent_variables]
     y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
@@ -203,8 +206,8 @@ def k_nearest_neighbor_classification(path: str, target_variable: str, independe
     return return_dict
 
 
-def gaussian_naive_bayes(path: str, target_variable: str, independent_variables: list):
-    df = pd.read_csv(path)
+def gaussian_naive_bayes(dataframe, target_variable: str, independent_variables: list):
+    df = dataframe
     x = df[independent_variables]
     y = df[[target_variable]]
     train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
@@ -263,8 +266,8 @@ def gaussian_naive_bayes(path: str, target_variable: str, independent_variables:
     return return_dict
 
 
-def voting_cls(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def voting_cls(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     x = df[independent_variables]
     y = df[[target_variable]]

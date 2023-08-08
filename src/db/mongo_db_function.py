@@ -106,7 +106,7 @@ def list_to_csv(list: list):
         writer.writerows(list)
     return file_path
 
-def list_to_pd(list: list):
+def list_to_df(list: list):
 
     for i in list:
         i.pop('_id')
