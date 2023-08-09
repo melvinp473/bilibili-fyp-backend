@@ -37,23 +37,31 @@ def decision_trees_classification(dataframe, target_variable: str, independent_v
     # Feature importance chart
     importance_values = clf.feature_importances_
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    fig.suptitle("Feature importances (based on Gini importance)")
+    fig.tight_layout()
     feature_imp_plot = plotting.figure_to_base64(fig)
 
     # ROC Curve
     roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
     fig_roc = roc_disp.figure_
+    fig_roc.suptitle("ROC curve")
+    fig_roc.tight_layout()
     roc_plot = plotting.figure_to_base64(fig_roc)
 
     # Precision Recall Curve
-    precision, recall, _ = precision_recall_curve(test_y, test_y_)
+    # precision, recall, _ = precision_recall_curve(test_y, test_y_)
     pr_disp = PrecisionRecallDisplay.from_estimator(clf, test_x, test_y)
     fig_pr = pr_disp.figure_
+    fig_pr.suptitle("Precision Recall curve")
+    fig_pr.tight_layout()
     pr_plot = plotting.figure_to_base64(fig_pr)
 
     # Confusion Matrix
     cm = confusion_matrix(test_y, test_y_)
     cm_disp = ConfusionMatrixDisplay.from_estimator(clf, test_x, test_y)
     fig_cm = cm_disp.figure_
+    fig_cm.suptitle("Confusion Matrix")
+    fig_cm.tight_layout()
     cm_plot = plotting.figure_to_base64(fig_cm)
 
     auc = roc_auc_score(test_y, test_y_auc)
@@ -97,23 +105,31 @@ def random_forest_classification(dataframe, target_variable: str, independent_va
     # Feature importance chart
     importance_values = clf.feature_importances_
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    fig.suptitle("Feature importances (based on Gini importance)")
+    fig.tight_layout()
     feature_imp_plot = plotting.figure_to_base64(fig)
 
     # ROC Curve
     roc_disp = RocCurveDisplay.from_estimator(clf, test_x, test_y)
     fig_roc = roc_disp.figure_
+    fig_roc.suptitle("ROC curve")
+    fig_roc.tight_layout()
     roc_plot = plotting.figure_to_base64(fig_roc)
 
     # Precision Recall Curve
     precision, recall, _ = precision_recall_curve(test_y, test_y_)
     pr_disp = PrecisionRecallDisplay.from_estimator(clf, test_x, test_y)
     fig_pr = pr_disp.figure_
+    fig_pr.suptitle("Precision Recall curve")
+    fig_pr.tight_layout()
     pr_plot = plotting.figure_to_base64(fig_pr)
 
     # Confusion Matrix
     cm = confusion_matrix(test_y, test_y_)
     cm_disp = ConfusionMatrixDisplay.from_estimator(clf, test_x, test_y)
     fig_cm = cm_disp.figure_
+    fig_cm.suptitle("Confusion Matrix")
+    fig_cm.tight_layout()
     cm_plot = plotting.figure_to_base64(fig_cm)
 
     print(test_y_)

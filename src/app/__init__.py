@@ -80,7 +80,7 @@ def create_app(debug=False):
         return_list = []
         return_dict = ""
 
-        if split_variable != None:
+        if split_variable is not None:
             split_dict = {}
             for document in store:
                 split_value = document[split_variable]
@@ -128,6 +128,9 @@ def create_app(debug=False):
                     return_dict = classification.gaussian_naive_bayes(df, target_variable, independent_variables)
                 elif algo == "voting_cls":
                     return_dict = classification.voting_cls(df, target_variable, independent_variables, algo_params)
+
+                if split_variable is not None:
+                    return_dict.update({"split_value": split_data[0][split_variable]})
 
                 if request_json["result_logging"]["save_results"]:
                     metric = return_dict
