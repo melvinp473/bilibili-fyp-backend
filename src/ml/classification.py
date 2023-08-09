@@ -35,7 +35,7 @@ def decision_trees_classification(dataframe, target_variable: str, independent_v
     print("---------------------------------------------------------------------")
 
     # Feature importance chart
-    importance_values = clf.feature_importances_
+    importance_values = clf.feature_importances_.tolist()
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
     fig.suptitle("Feature importances (based on Gini importance)")
     fig.tight_layout()
@@ -82,6 +82,8 @@ def decision_trees_classification(dataframe, target_variable: str, independent_v
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
     return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
     return return_dict
 
 
@@ -103,7 +105,7 @@ def random_forest_classification(dataframe, target_variable: str, independent_va
     print("---------------------------------------------------------------------")
 
     # Feature importance chart
-    importance_values = clf.feature_importances_
+    importance_values = clf.feature_importances_.tolist()
     fig = plotting.plot_importance_figure(importance_values, independent_variables)
     fig.suptitle("Feature importances (based on Gini importance)")
     fig.tight_layout()
@@ -157,6 +159,8 @@ def random_forest_classification(dataframe, target_variable: str, independent_va
     return_dict.update({"pr_plot": pr_plot})
     return_dict.update({"cm_plot": cm_plot})
     return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
     return return_dict
 
 
