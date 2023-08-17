@@ -201,8 +201,8 @@ def outliers_removal(dataset_id, variables):
         print(lower_array.sum())
 
         # print(df[upper_array])
-        df.loc[upper_array, outlier] = ''
-        df.loc[lower_array, outlier] = ''
+        df.loc[upper_array, outlier] = np.nan
+        df.loc[lower_array, outlier] = np.nan
         # print(df[upper_array][outlier])
         # print(df[lower_array][outlier])
 
@@ -372,7 +372,7 @@ def split_dataset(dataset_id, target_attribute):
         dataset_collection = mongo_db_function.get_collection(db, "Dataset")
         dataset_var = mongo_db_function.get_by_id(dataset_collection,doc[0]["DATASET_ID"])
 
-        name = dataset_var["name"]
+        name = doc[0]["State"]
         id = dataset_var["user_id"]
 
         keys_list = list(doc[0].keys())
