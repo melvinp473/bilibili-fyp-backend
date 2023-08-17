@@ -11,6 +11,8 @@ from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.feature_selection import RFE
 from src.db import mongo_db_function
 
+from datetime import datetime
+
 
 def imputation(dataset_id, strategy_type, variables):
     db = mongo_db_function.get_database('FIT4701')
@@ -350,6 +352,47 @@ def wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator
         attributes = x.columns[rfe.get_support()]
 
         return list(attributes)
+
+def split_dataset(dataset_id, target_attribute):
+
+    db = mongo_db_function.get_database('FIT4701')
+    collection = mongo_db_function.get_collection(db, "Data")
+    store = mongo_db_function.get_by_query(collection, dataset_id, "DATASET_ID")
+    split_dict = {}
+    for document in store:
+        document.pop("_id")
+        split_value = document[target_attribute]
+        if split_value in split_dict:
+            split_dict[split_value].append(document)
+        else:
+            split_dict[split_value] = [document]
+    split_datasets = [split_dict[key] for key in split_dict]
+
+    for doc in split_datasets:
+        dataset_collection = mongo_db_function.get_collection(db, "Dataset")
+        dataset_var = mongo_db_function.get_by_id(dataset_collection,doc[0]["DATASET_ID"])
+
+        name = dataset_var["name"]
+        id = dataset_var["user_id"]
+
+        keys_list = list(doc[0].keys())
+        keys_list.remove('DATASET_ID')
+        data = {
+            "name": name,
+            "user_id": id,
+            "status": "ACTIVE",
+            "create_date": datetime.now(),
+            "update_date": datetime.now(),
+            "attributes": keys_list
+        }
+
+        dataset_doc_insert_result = dataset_collection.insert_one(data)
+        dataset_doc_id = str(dataset_doc_insert_result.inserted_id)
+
+        for each in doc:
+            each["DATASET_ID"] = dataset_doc_id
+        mongo_db_function.insert_dataset(collection, doc)
+
 
 # label({"DATASET_ID": "6489def06240641623711ca0"})
 # print(k_selection("6491a29f8ec5697220711e44", 5, "f_regression", "STROKE"))

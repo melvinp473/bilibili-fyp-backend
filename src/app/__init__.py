@@ -293,9 +293,17 @@ def create_app(debug=False):
             elif preprocessing_code == 'normalization':
                 selected_variables = request_json['variables']
                 preprocessing.normalization(input, selected_variables)
+
+            elif preprocessing_code == 'split dataset':
+                selected_variables = request_json['variables'][0]
+                preprocessing.split_dataset(input,selected_variables)
+
             response = {'flag': flag,
                         'body': body}
             response = jsonify(response)
+
+
+
 
         except BaseException as e:
             e = str(e)
