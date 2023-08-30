@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
@@ -53,7 +55,10 @@ def imputation(dataset_id, strategy_type, variables):
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
-            temp_dict[keys[i]] = element[i]
+            if math.isnan(element[i]):
+                temp_dict[keys[i]] = None
+            else:
+                temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
         documents.append(temp_dict)
 
@@ -201,8 +206,8 @@ def outliers_removal(dataset_id, variables):
         print(lower_array.sum())
 
         # print(df[upper_array])
-        df.loc[upper_array, outlier] = np.nan
-        df.loc[lower_array, outlier] = np.nan
+        df.loc[upper_array, outlier] = None
+        df.loc[lower_array, outlier] = None
         # print(df[upper_array][outlier])
         # print(df[lower_array][outlier])
 
@@ -212,7 +217,10 @@ def outliers_removal(dataset_id, variables):
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
-            temp_dict[keys[i]] = element[i]
+            if math.isnan(element[i]):
+                temp_dict[keys[i]] = None
+            else:
+                temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
         documents.append(temp_dict)
 
