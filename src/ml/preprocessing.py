@@ -9,7 +9,8 @@ from sklearn.feature_selection import mutual_info_regression, r_regression, f_re
     f_classif
 from sklearn.linear_model import LinearRegression
 from sklearn import neighbors
-from sklearn.feature_selection import SequentialFeatureSelector
+# from sklearn.feature_selection import SequentialFeatureSelector
+from mlxtend.feature_selection import SequentialFeatureSelector
 from sklearn.feature_selection import RFE
 from src.db import mongo_db_function
 
@@ -336,30 +337,39 @@ def wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator
     x = df.drop(target_attribute, axis=1)
     y = df[target_attribute]
 
-    estimator = ""
+    score_type = "r2"
 
     if estimator_type == "lin_regr":
         estimator = LinearRegression()
 
     elif estimator_type == "knn":
         if model == "classification":
+            score_type = "accuracy"
             estimator = neighbors.KNeighborsClassifier(**estimator_params)
         elif model == "regression":
             estimator = neighbors.KNeighborsRegressor(**estimator_params)
 
+    # if selection_type == "sfs":
+    #     sfs = SequentialFeatureSelector(estimator, n_features_to_select=k, scoring=score_type)
+    #     sfs.fit_transform(x, y)
+    #     attributes = x.columns[sfs.get_support()]
     if selection_type == "sfs":
-        sfs = SequentialFeatureSelector(estimator, n_features_to_select=k)
+        sfs = SequentialFeatureSelector(estimator, k_features=k, scoring=score_type)
         sfs.fit_transform(x, y)
-        attributes = x.columns[sfs.get_support()]
+        attributes = list(sfs.k_feature_names_)
+        attributes.append(sfs.k_score_)
 
-        return list(attributes)
+        return attributes
 
     elif selection_type == "rfe":
         rfe = RFE(estimator, n_features_to_select=k)
         rfe.fit_transform(x, y)
         attributes = x.columns[rfe.get_support()]
 
-        return list(attributes)
+        attributes = list(attributes)
+        attributes.append(rfe.score(x, y))
+
+        return attributes
 
 def split_dataset(dataset_id, target_attribute):
 
