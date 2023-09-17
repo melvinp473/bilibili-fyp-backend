@@ -302,8 +302,15 @@ def create_app(debug=False):
                         'body': body}
             response = jsonify(response)
 
-
-
+        except KeyError as key_err:
+            err_type = type(key_err).__name__
+            if str(key_err) == "'DATASET_ID'":
+                msg = err_type + ". Please select a dataset from the Datasets page."
+            elif str(key_err) == "'preprocessing_code'":
+                msg = err_type + ". Please select a preprocessing method."
+            else:
+                msg = err_type + ". Required value " + str(key_err) + " is missing."
+            response = jsonify({'error': msg})
 
         except BaseException as e:
             e = str(e)
