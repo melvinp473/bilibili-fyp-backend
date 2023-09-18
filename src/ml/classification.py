@@ -2,7 +2,7 @@ from sklearn import tree
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
-from sklearn.neighbors import RadiusNeighborsClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import roc_auc_score, accuracy_score
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
@@ -174,7 +174,7 @@ def k_nearest_neighbor_classification(dataframe, target_variable: str, independe
     train_y = train_y.to_numpy().ravel()
     test_y = test_y.to_numpy().ravel()
 
-    clf = RadiusNeighborsClassifier(**algo_params)
+    clf = KNeighborsClassifier(**algo_params)
     clf.fit(train_x, train_y)
 
     test_y_ = clf.predict(test_x)
