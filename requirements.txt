@@ -15,7 +15,8 @@ kiwisolver==1.4.4
 liac-arff==2.5.0
 MarkupSafe==1.1.1
 matplotlib==3.7.1
-numpy @ file:///C:/Users/kohji/PycharmProjects/bilibili-fyp-backend/numpy-1.22.4%2Bmkl-cp310-cp310-win_amd64.whl
+mlxtend==0.22.0
+numpy==1.25.2
 packaging==23.1
 pandas==2.0.1
 Pillow==9.5.0
@@ -23,7 +24,6 @@ pymongo==4.3.3
 pyparsing==3.0.9
 python-dateutil==2.8.2
 python-dotenv==1.0.0
-python-javabridge @ file:///C:/Users/kohji/PycharmProjects/bilibili-fyp-backend/python_javabridge-4.0.3-cp310-cp310-win_amd64.whl
 python-weka-wrapper3==0.2.12
 pytz==2023.3
 scikit-learn==1.2.2

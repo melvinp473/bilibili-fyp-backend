@@ -3,19 +3,19 @@ import pandas as pd
 import sklearn.linear_model as linear_model
 from sklearn import svm
 from sklearn import tree, neighbors
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, VotingRegressor, BaggingRegressor
+from sklearn.ensemble import RandomForestRegressor, VotingRegressor, BaggingRegressor
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 from sklearn.model_selection import train_test_split
-
 from src.ml import metric_cal
+from . import plotting
 
 
-def linear_regression(path: str, target_variable: str, independent_variables: list):
-    df = pd.read_csv(path)
+def linear_regression(dataframe, target_variable: str, independent_variables: list):
+    df = dataframe
     regr = linear_model.LinearRegression()
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
@@ -29,6 +29,11 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
+    # Feature importance chart
+    importance_values = regr.coef_[0].tolist()
+    fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    feature_imp_plot = plotting.figure_to_base64(fig)
+
     return_dict.update({"r2_score": r2})
     return_dict.update({"mae": mean_absolute})
     return_dict.update({"mse": mean_squared})
@@ -37,15 +42,18 @@ def linear_regression(path: str, target_variable: str, independent_variables: li
     return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
     return_dict.update({"media_absolute": media_absolute})
     return_dict.update({"max_error": max_error})
+    return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
     return return_dict
 
 
-def support_vector_machines(path: str, target_variable: str, independent_variables: list):
-    df = pd.read_csv(path)
+def support_vector_machines(dataframe, target_variable: str, independent_variables: list):
+    df = dataframe
     x = df[independent_variables]
     y = df[[target_variable]]
     regr = svm.SVR(kernel="linear", C=100, gamma="auto")
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -82,13 +90,13 @@ def support_vector_machines(path: str, target_variable: str, independent_variabl
     return return_dict
 
 
-def decision_trees(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def decision_trees(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     regr = tree.DecisionTreeRegressor(**algo_params)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
@@ -106,6 +114,11 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
+    # Feature importance chart
+    importance_values = regr.feature_importances_.tolist()
+    fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    feature_imp_plot = plotting.figure_to_base64(fig)
+
     return_dict = {"r2_score": r2}
     return_dict.update({"mae": mean_absolute})
     return_dict.update({"mse": mean_squared})
@@ -114,17 +127,19 @@ def decision_trees(path: str, target_variable: str, independent_variables: list,
     return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
     return_dict.update({"media_absolute": media_absolute})
     return_dict.update({"max_error": max_error})
+    return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
 
     return return_dict
 
 
-def kth_nearest_neighbors(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
-
+def kth_nearest_neighbors(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
     regr = neighbors.KNeighborsRegressor(**algo_params)
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     regr.fit(train_x, train_y)
     test_y_ = regr.predict(test_x)
 
@@ -154,12 +169,12 @@ def kth_nearest_neighbors(path: str, target_variable: str, independent_variables
     return return_dict
 
 
-def voting_regressor(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def voting_regressor(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
     train_x = train_x.to_numpy()
     test_x = test_x.to_numpy()
     train_y = train_y.to_numpy().ravel()
@@ -211,12 +226,16 @@ def voting_regressor(path: str, target_variable: str, independent_variables: lis
     return return_dict
 
 
-def random_forest(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def random_forest(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
+    train_x = train_x.to_numpy()
+    test_x = test_x.to_numpy()
+    train_y = train_y.to_numpy().ravel()
+    test_y = test_y.to_numpy().ravel()
 
     regr = RandomForestRegressor(**algo_params)
     regr.fit(train_x, train_y)
@@ -236,6 +255,11 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     media_absolute = metric_cal.metric_media_absolute(test_y, test_y_)
     max_error = metric_cal.metric_max_error(test_y, test_y_)
 
+    # Feature importance chart
+    importance_values = regr.feature_importances_.tolist()
+    fig = plotting.plot_importance_figure(importance_values, independent_variables)
+    feature_imp_plot = plotting.figure_to_base64(fig)
+
     return_dict = {"r2_score": r2}
     return_dict.update({"mae": mean_absolute})
     return_dict.update({"mse": mean_squared})
@@ -244,16 +268,19 @@ def random_forest(path: str, target_variable: str, independent_variables: list, 
     return_dict.update({"mean_absolute_percentage": mean_absolute_percentage})
     return_dict.update({"media_absolute": media_absolute})
     return_dict.update({"max_error": max_error})
+    return_dict.update({"feature_imp_plot": feature_imp_plot})
+    return_dict.update({"importance_values": importance_values})
+    return_dict.update({"independent_variables": independent_variables})
 
     return return_dict
 
 
-def bagging_regr(path: str, target_variable: str, independent_variables: list, algo_params: dict):
-    df = pd.read_csv(path)
+def bagging_regr(dataframe, target_variable: str, independent_variables: list, algo_params: dict):
+    df = dataframe
 
     x = df[independent_variables]
     y = df[[target_variable]]
-    train_x, test_x, train_y, test_y = train_test_split(x, y, test_size=0.10, random_state=0)
+    train_x, test_x, train_y, test_y = train_test_split(x, y, train_size=0.90, random_state=1)
 
     estimator_str = algo_params.pop('estimator')
     estimator_params = algo_params.pop('estimator_params')

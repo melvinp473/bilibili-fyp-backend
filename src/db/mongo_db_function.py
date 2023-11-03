@@ -106,25 +106,15 @@ def list_to_csv(list: list):
         writer.writerows(list)
     return file_path
 
-def csv_to_arff(file_path):
-    csv = pd.read_csv(file_path)
-    current_dir = os.getcwd()
-    file_name = 'list.arff'
-    path = os.path.join(current_dir, file_name)
-    with open('list.arff', 'w') as f:
-        f.write('@relation MLDATA\n\n')
-        for col in csv.columns:
-            col_nume = col
-            if ' ' in col:
-                col_nume = "'" + col + "'"
-                print(col_nume)
-            f.write('@attribute {} {}\n'.format(col_nume, 'numeric' if csv[col].dtype == 'float64' or csv[col].dtype == 'int64' else 'STRING'))
-        f.write('\n@data\n')
-        for _, row in csv.iterrows():
-            f.write(','.join(str(val) for val in row.values) + '\n')
+def list_to_df(list: list):
 
-    print(path)
-    return path
+    for i in list:
+        i.pop('_id')
+        i.pop('DATASET_ID')
+    df = pd.DataFrame(list)
+    print(df.dtypes)
+    return df
+
 
 def remove_file(file_path):
     try:
