@@ -17,6 +17,8 @@ def plot_importance_figure(importance_values, independent_variables):
     sorted_data = sorted(zip(importance_values, independent_variables))
     importance_values, independent_variables = zip(*sorted_data)
     ax.bar([independent_variables[x] for x in range(len(importance_values))], importance_values)
+    ax.set_xlabel("Risk Factors")
+    ax.set_ylabel("Feature Importance Score (Gini Coefficient)")
     ax.set_xticks(independent_variables)
     ax.set_xticklabels(independent_variables, rotation=40, ha='right')
     fig.tight_layout()

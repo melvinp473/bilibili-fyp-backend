@@ -312,7 +312,7 @@ def voting_cls(dataframe, target_variable: str, independent_variables: list, alg
             estimator = ('trees_' + str(estimator_counts['trees']), tree.DecisionTreeClassifier(**estimator_params))
         elif estimator_i_params['algo_id'] == 'knn_cls':
             estimator_counts['knn'] += 1
-            estimator = ('knn_' + str(estimator_counts['knn']), RadiusNeighborsClassifier(**estimator_params))
+            estimator = ('knn_' + str(estimator_counts['knn']), KNeighborsClassifier(**estimator_params))
         elif estimator_i_params['algo_id'] == 'random_forest_cls':
             estimator_counts['random_forest'] += 1
             estimator = ('random_forest_' + str(estimator_counts['random_forest']), RandomForestClassifier(**estimator_params))
@@ -377,6 +377,7 @@ def voting_cls(dataframe, target_variable: str, independent_variables: list, alg
 
     accuracy = accuracy_score(test_y, test_y_.round())
     print("Accuracy:", accuracy)
+    precision = precision_score(test_y, test_y_)
     recall = recall_score(test_y, test_y_, average='weighted')
     print("Recall:", recall)
     tn, fp, fn, tp = cm.ravel()
@@ -385,8 +386,10 @@ def voting_cls(dataframe, target_variable: str, independent_variables: list, alg
     f1 = f1_score(test_y, test_y_, average='weighted')
     print("f1_score:", f1)
 
+
     return_dict = {"auc": auc}
     return_dict.update({"accuracy": accuracy})
+    return_dict.update({"precision": precision})
     return_dict.update({"recall": recall})
     return_dict.update({"specificity": specificity})
     return_dict.update({"f1": f1})
