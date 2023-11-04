@@ -3,8 +3,8 @@
 python -m venv venv
 
 2. activate venv:
-cd venv
-./Scripts/activate
+cd venv/Scripts\
+activate
 
 3. install all the required package:
 pip3 install -r requirements.txt
