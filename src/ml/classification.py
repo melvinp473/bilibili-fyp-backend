@@ -65,12 +65,12 @@ def decision_trees_classification(dataframe, target_variable: str, independent_v
     cm_plot = plotting.figure_to_base64(fig_cm)
 
     auc = roc_auc_score(test_y, test_y_auc)
-    precision = precision_score(test_y, test_y_)
+    precision = precision_score(test_y, test_y_, pos_label=1.0)
     accuracy = accuracy_score(test_y, test_y_.round())
-    recall = recall_score(test_y, test_y_, average='weighted')
+    recall = recall_score(test_y, test_y_, pos_label=1.0)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    f1 = f1_score(test_y, test_y_, average='weighted')
+    f1 = f1_score(test_y, test_y_, pos_label=1.0)
 
     return_dict = {"auc": auc}
     return_dict.update({"precision": precision})
@@ -137,16 +137,16 @@ def random_forest_classification(dataframe, target_variable: str, independent_va
     print(test_y_)
     auc = roc_auc_score(test_y, test_y_auc)
     print("AUC-ROC:", auc)
-    precision = precision_score(test_y, test_y_)
+    precision = precision_score(test_y, test_y_, pos_label=1.0)
     print("Precision:", precision)
     accuracy = accuracy_score(test_y, test_y_.round())
     print("Accuracy:", accuracy)
-    recall = recall_score(test_y, test_y_, average='weighted')
+    recall = recall_score(test_y, test_y_, pos_label=1.0)
     print("Recall:", recall)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
     print("Specificity:", specificity)
-    f1 = f1_score(test_y, test_y_, average='weighted')
+    f1 = f1_score(test_y, test_y_, pos_label=1.0)
     print("f1_score:", f1)
 
     return_dict = {"auc": auc}
@@ -199,20 +199,13 @@ def k_nearest_neighbor_classification(dataframe, target_variable: str, independe
     fig_cm = cm_disp.figure_
     cm_plot = plotting.figure_to_base64(fig_cm)
 
-    print(test_y_)
     auc = roc_auc_score(test_y, test_y_auc)
-    print("AUC-ROC:", auc)
-    precision = precision_score(test_y, test_y_)
-    print("Precision:", precision)
+    precision = precision_score(test_y, test_y_, pos_label=1.0)
     accuracy = accuracy_score(test_y, test_y_.round())
-    print("Accuracy:", accuracy)
-    recall = recall_score(test_y, test_y_, average='weighted')
-    print("Recall:", recall)
+    recall = recall_score(test_y, test_y_, pos_label=1.0)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    print("Specificity:", specificity)
-    f1 = f1_score(test_y, test_y_, average='weighted')
-    print("f1_score:", f1)
+    f1 = f1_score(test_y, test_y_, pos_label=1.0)
 
     return_dict = {"auc": auc}
     return_dict.update({"precision": precision})
@@ -261,18 +254,12 @@ def gaussian_naive_bayes(dataframe, target_variable: str, independent_variables:
     cm_plot = plotting.figure_to_base64(fig_cm)
 
     auc = roc_auc_score(test_y, test_y_auc)
-    print("AUC-ROC:", auc)
-    precision = precision_score(test_y, test_y_)
-    print("Precision:", precision)
+    precision = precision_score(test_y, test_y_, pos_label=1.0)
     accuracy = accuracy_score(test_y, test_y_.round())
-    print("Accuracy:", accuracy)
-    recall = recall_score(test_y, test_y_, average='weighted')
-    print("Recall:", recall)
+    recall = recall_score(test_y, test_y_, pos_label=1.0)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    print("Specificity:", specificity)
-    f1 = f1_score(test_y, test_y_, average='weighted')
-    print("f1_score:", f1)
+    f1 = f1_score(test_y, test_y_, pos_label=1.0)
 
     return_dict = {"auc": auc}
     return_dict.update({"precision": precision})
@@ -375,16 +362,12 @@ def voting_cls(dataframe, target_variable: str, independent_variables: list, alg
 
         estimator_results.append(estimator_result_dict)
 
+    precision = precision_score(test_y, test_y_, pos_label=1.0)
     accuracy = accuracy_score(test_y, test_y_.round())
-    print("Accuracy:", accuracy)
-    precision = precision_score(test_y, test_y_)
-    recall = recall_score(test_y, test_y_, average='weighted')
-    print("Recall:", recall)
+    recall = recall_score(test_y, test_y_, pos_label=1.0)
     tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
-    print("Specificity:", specificity)
-    f1 = f1_score(test_y, test_y_, average='weighted')
-    print("f1_score:", f1)
+    f1 = f1_score(test_y, test_y_, pos_label=1.0)
 
 
     return_dict = {"auc": auc}
