@@ -410,6 +410,11 @@ def create_app(debug=False):
             'data_rows_removed': f'{delete_data_result.deleted_count}',
         })
 
+    @application.route('/spatial-analysis', methods=['POST'])
+    def do_spatial_analysis():
+
+        return None
+
     # @application.route('/feature-selection', methods=['POST'])
     # def feature_selection():
     #     request_json = request.get_json()
