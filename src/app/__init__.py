@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 from io import BytesIO
-
+import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -11,7 +11,7 @@ from flask_cors import CORS
 import numpy as np
 from ..db import mongo_db_function
 from ..ml import regression, preprocessing, classification, PySAL_SA
-
+from ..shp import *
 
 def create_app(debug=False):
     # print(os.getenv('FLASK_ENV'))
@@ -413,11 +413,13 @@ def create_app(debug=False):
     @application.route('/spatial-analysis', methods=['POST'])
     def do_spatial_analysis():
         request_json = request.get_json()
-        dataset_id = request_json['dataset_id']
-        user_id = request_json['user_ic']
+        dataset_id = request_json['DATASET_ID']
+        user_id = request_json['user_id']
         area_level = request_json['area_level']
         target_variable = request_json['target_variable']
-        file_path = '../shp/aus_pha_shape_files/pha_shape_files/2021'
+
+        file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
+
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
         data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')

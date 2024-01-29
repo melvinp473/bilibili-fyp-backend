@@ -23,6 +23,7 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, locations, area
 
         # Previously written code here
         gdf = gpd.read_file(shp_file_path)
+        print(gdf)
         gdf['Value'] = np.nan
 
         #
@@ -115,4 +116,4 @@ def save_results(images, dataset_id):
 #
 # data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
 # df = pd.DataFrame(data)
-# spatial_analysis(file_path,target_variable,df,user_id,area_level)
+# spatial_analysis(file_path,target_variable,df,user_id,area_level)s
