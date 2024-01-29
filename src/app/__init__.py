@@ -412,6 +412,13 @@ def create_app(debug=False):
 
     @application.route('/spatial-analysis', methods=['POST'])
     def do_spatial_analysis():
+        request_json = request.get_json()
+        dataset_id = request_json['dataset_id']
+        user_id = request_json['user_ic']
+        area_level = request_json['area_level']
+        target_variable = request_json['target_variable']
+
+
 
         return None
 
