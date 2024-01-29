@@ -10,7 +10,7 @@ from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 import numpy as np
 from ..db import mongo_db_function
-from ..ml import regression, preprocessing, classification
+from ..ml import regression, preprocessing, classification, PySAL_SA
 
 
 def create_app(debug=False):
@@ -417,10 +417,18 @@ def create_app(debug=False):
         user_id = request_json['user_ic']
         area_level = request_json['area_level']
         target_variable = request_json['target_variable']
+        file_path = '../shp/aus_pha_shape_files/pha_shape_files/2021'
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
+        data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
+        df = pd.DataFrame(data)
+        result = PySAL_SA.spatial_analysis(file_path,target_variable,df,user_id,area_level)
+        json_data = jsonify(result)
+
+        json_data = json_data
 
 
-
-        return None
+        return json_data
 
     # @application.route('/feature-selection', methods=['POST'])
     # def feature_selection():
