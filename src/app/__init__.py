@@ -424,7 +424,7 @@ def create_app(debug=False):
         collection = mongo_db_function.get_collection(db, "Data")
         data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
         df = pd.DataFrame(data)
-        result = PySAL_SA.spatial_analysis(file_path,target_variable,df,user_id,area_level)
+        result = PySAL_SA.spatial_analysis(file_path,target_variable,df,True,area_level,'sss',collection)
         json_data = jsonify(result)
 
         json_data = json_data
