@@ -417,20 +417,44 @@ def create_app(debug=False):
         user_id = request_json['user_id']
         area_level = request_json['area_level']
         target_variable = request_json['target_variable']
+        save = request_json['save']
+        mapping_variable = request_json['mapping_variable']
 
-        file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
+        file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp' \
+                    '/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
+
+        # file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp" \
+        #             "/aus_pha_shape_files/pha_shape_files/2016/PHA_2016_AUST_Gen50.shp"
 
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
         data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
         df = pd.DataFrame(data)
-        result = PySAL_SA.spatial_analysis(file_path,target_variable,df,True,area_level,'sss',collection)
-        json_data = jsonify(result)
+        graphs_str = []
+        years = []
+        if 'Year' in df.columns:
+            years = df['Year'].unique()
 
-        json_data = json_data
+        if len(years) > 0:
+            for year in years:
+                data = df.loc[df['Year'] == year]
+                result = PySAL_SA.spatial_analysis(file_path, target_variable, data, save, area_level, 'sss',
+                                                   collection, mapping_variable)
+                graphs_str.append(result)
 
+        else:
+            result = PySAL_SA.spatial_analysis(file_path, target_variable, df, save, area_level, 'sss',
+                                               collection, mapping_variable)
+            graphs_str.append(result)
 
-        return json_data
+        return jsonify(graphs_str)
+
+        # result = PySAL_SA.spatial_analysis(file_path,target_variable,df,True,area_level,'sss',collection)
+        # json_data = jsonify(result)
+        #
+        # json_data = json_data
+        #
+        # return json_data
 
     # @application.route('/feature-selection', methods=['POST'])
     # def feature_selection():

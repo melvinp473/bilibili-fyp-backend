@@ -13,7 +13,8 @@ import numpy as np
 from src.db import mongo_db_function
 
 
-def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations, area_level,collection):
+def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations, area_level, collection,
+                     mapping_variable):
 
     # From dataset id, find the dataset and query for unique years
     # For year in unique years:
@@ -29,7 +30,7 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
 
     #
     for idx, row in data_frame.iterrows():
-        code = row['PHA Code']
+        code = row[mapping_variable]
         value = row[target_variable]
         if pd.isna(value):
             gdf.drop(gdf[gdf['Code'] == code].index, inplace=True)
@@ -41,12 +42,29 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
             else:
                 print(f"No match found for Code: {code}")
 
+    # for idx, row in data_frame.iterrows():
+    #     code = str(row[mapping_variable])
+    #     value = row[target_variable]
+    #     if pd.isna(value):
+    #         gdf.drop(gdf[gdf['PHA_CODE16'] == code].index, inplace=True)
+    #     else:
+    #         matched_row = gdf[gdf['PHA_CODE16'] == code]
+    #
+    #         if not matched_row.empty:
+    #             gdf.loc[matched_row.index, 'Value'] = value
+    #         else:
+    #             print(f"No match found for Code: {code}")
+
+    print(min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
     w = DistanceBand.from_dataframe(gdf, threshold=min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
 
     y = gdf['Value']
+    # print(y.values)
+    # print(gdf['Name'].values)
     g = G_Local(y, w, transform="R", star=True, seed=10)
 
     z_score = g.z_sim
+    print(z_score)
     p_value = g.p_sim
 
     gdf['z_score'] = z_score
@@ -104,20 +122,20 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
     print(data_frame)
 
     if save:
-        save_results(gdf,data_frame,collection)
+        save_results(gdf,data_frame,collection, mapping_variable)
 
     return_dict = {"graph": img_str}
     return return_dict
 
 
-def save_results(gdf, data_frame, collection):
+def save_results(gdf, data_frame, collection, mapping_variable):
 
     # Frontend gives images in bytes format
     # Store it in MongoDB using the dataset id as unique identifier
     dataset_id = data_frame.iloc[0]["DATASET_ID"]
-    mongo_db_function.delete_dataset(collection,dataset_id)
+    mongo_db_function.delete_dataset(collection, dataset_id)
     for idx, row in data_frame.iterrows():
-        code = row['PHA Code']
+        code = row[mapping_variable]
         matched_row = gdf[gdf['Code'] == code]
 
         if not matched_row.empty:
