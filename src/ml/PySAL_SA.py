@@ -26,6 +26,10 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
 
     # Previously written code here
     gdf = gpd.read_file(shp_file_path)
+    target_code = "code"
+
+    matching_columns = [col for col in gdf.columns if target_code.lower() in col.lower()]
+    matching = matching_columns[0]
     gdf['Value'] = np.nan
 
     #
@@ -33,9 +37,9 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
         code = row[mapping_variable]
         value = row[target_variable]
         if pd.isna(value):
-            gdf.drop(gdf[gdf['Code'] == code].index, inplace=True)
+            gdf.drop(gdf[gdf[matching] == code].index, inplace=True)
         else:
-            matched_row = gdf[gdf['Code'] == code]
+            matched_row = gdf[gdf[matching] == code]
 
             if not matched_row.empty:
                 gdf.loc[matched_row.index, 'Value'] = value
@@ -122,13 +126,13 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
     print(data_frame)
 
     if save:
-        save_results(gdf,data_frame,collection, mapping_variable)
+        save_results(gdf,data_frame,collection, mapping_variable, matching)
 
     return_dict = {"graph": img_str}
     return return_dict
 
 
-def save_results(gdf, data_frame, collection, mapping_variable):
+def save_results(gdf, data_frame, collection, mapping_variable, matching):
 
     # Frontend gives images in bytes format
     # Store it in MongoDB using the dataset id as unique identifier
@@ -136,7 +140,7 @@ def save_results(gdf, data_frame, collection, mapping_variable):
     mongo_db_function.delete_dataset(collection, dataset_id)
     for idx, row in data_frame.iterrows():
         code = row[mapping_variable]
-        matched_row = gdf[gdf['Code'] == code]
+        matched_row = gdf[gdf[matching] == code]
 
         if not matched_row.empty:
             hot_spot_value = matched_row.iloc[0]['is_hotspot']
@@ -147,7 +151,7 @@ def save_results(gdf, data_frame, collection, mapping_variable):
 
         document = row.to_dict()
         del document['_id']
-        print(document['PHA Code'])
+        print(document[matching])
     data_frame.drop('_id', axis=1, inplace=True)
     dict_list = data_frame.to_dict(orient='records')
     mongo_db_function.insert_dataset(collection,dict_list)

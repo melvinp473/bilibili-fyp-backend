@@ -57,14 +57,16 @@
 
 
 
-# import geopandas as gpd
+import geopandas as gpd
 #
 # # 读取 Shapefile
-# file_path = 'C:\FIT4701\FYP\pha_shape_files\pha_shape_files'  # 请替换为你的实际文件路径
-# gdf = gpd.read_file(file_path)
-#
-# # 打印 GeoDataFrame 的列名
-# print(gdf.columns)
+# file_path = 'C:\FIT4701\FYP\pha_shape_files\pha_shape_files'
+file_path = '../src/shp/aus_pha_shape_files/pha_shape_files/2016/PHA_2016_AUST_Gen50.shp'
+gdf = gpd.read_file(file_path)
+target_code = "code"
+
+matching_columns = [col for col in gdf.columns if target_code.lower() in col.lower()]
+matching = matching_columns[0]
 #
 import geopandas as gpd
 import numpy as np
