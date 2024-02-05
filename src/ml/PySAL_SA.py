@@ -113,7 +113,7 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
 
     print(gdf)
     print(data_frame)
-
+    data_frame = data_frame.where(pd.notnull(data_frame), None)
     if save:
         save_results(gdf,data_frame,collection, mapping_variable, matching)
 
@@ -126,7 +126,7 @@ def save_results(gdf, data_frame, collection, mapping_variable, matching):
     # Frontend gives images in bytes format
     # Store it in MongoDB using the dataset id as unique identifier
     dataset_id = data_frame.iloc[0]["DATASET_ID"]
-    mongo_db_function.delete_dataset(collection, dataset_id)
+
     for idx, row in data_frame.iterrows():
         code = row[mapping_variable]
         matched_row = gdf[gdf[matching] == code]
@@ -140,9 +140,13 @@ def save_results(gdf, data_frame, collection, mapping_variable, matching):
 
         document = row.to_dict()
         del document['_id']
-        print(document[matching])
     data_frame.drop('_id', axis=1, inplace=True)
     dict_list = data_frame.to_dict(orient='records')
+    for d in dict_list:
+        for key, value in d.items():
+            if pd.isna(value):
+                d[key] = None
+
     mongo_db_function.insert_dataset(collection,dict_list)
 
     column_names = data_frame.columns.tolist()

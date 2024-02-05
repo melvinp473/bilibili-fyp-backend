@@ -423,13 +423,14 @@ def create_app(debug=False):
         file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp' \
                     '/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
 
-
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
         data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
         df = pd.DataFrame(data)
         graphs_str = []
         years = []
+        if save:
+            mongo_db_function.delete_dataset(collection, dataset_id)
         if 'Year' in df.columns:
             years = df['Year'].unique()
 
@@ -447,7 +448,6 @@ def create_app(debug=False):
                 elif year == 2021:
                     file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"\
                     "aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp"
-
 
                 result = PySAL_SA.spatial_analysis(file_path, target_variable, data, save, area_level, 'sss',
                                                    collection, mapping_variable)
