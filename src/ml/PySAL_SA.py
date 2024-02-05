@@ -30,6 +30,7 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
 
     matching_columns = [col for col in gdf.columns if target_code.lower() in col.lower()]
     matching = matching_columns[0]
+    gdf[matching] = gdf[matching].astype(int)
     gdf['Value'] = np.nan
 
     #
@@ -46,26 +47,13 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
             else:
                 print(f"No match found for Code: {code}")
 
-    # for idx, row in data_frame.iterrows():
-    #     code = str(row[mapping_variable])
-    #     value = row[target_variable]
-    #     if pd.isna(value):
-    #         gdf.drop(gdf[gdf['PHA_CODE16'] == code].index, inplace=True)
-    #     else:
-    #         matched_row = gdf[gdf['PHA_CODE16'] == code]
-    #
-    #         if not matched_row.empty:
-    #             gdf.loc[matched_row.index, 'Value'] = value
-    #         else:
-    #             print(f"No match found for Code: {code}")
 
-    gdf.dropna(axis=0)
+    gdf = gdf.dropna(axis=0)
     print(min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
     w = DistanceBand.from_dataframe(gdf, threshold=min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
 
     y = gdf['Value']
-    # print(y.values)
-    # print(gdf['Name'].values)
+
     g = G_Local(y, w, transform="R", star=True, seed=10)
 
     z_score = g.z_sim
