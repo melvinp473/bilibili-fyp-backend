@@ -39,6 +39,7 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
         value = row[target_variable]
         if pd.isna(value):
             gdf.drop(gdf[gdf[matching] == code].index, inplace=True)
+            data_frame.drop(idx, inplace=True)
         else:
             matched_row = gdf[gdf[matching] == code]
 
@@ -113,7 +114,6 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
 
     print(gdf)
     print(data_frame)
-    data_frame = data_frame.where(pd.notnull(data_frame), None)
     if save:
         save_results(gdf,data_frame,collection, mapping_variable, matching)
 
