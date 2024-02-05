@@ -423,8 +423,6 @@ def create_app(debug=False):
         file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp' \
                     '/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
 
-        # file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp" \
-        #             "/aus_pha_shape_files/pha_shape_files/2016/PHA_2016_AUST_Gen50.shp"
 
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Data")
@@ -438,11 +436,19 @@ def create_app(debug=False):
         if len(years) > 0:
             for year in years:
                 data = df.loc[df['Year'] == year]
+
+
+
+                file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp' \
+                            '/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
+
                 result = PySAL_SA.spatial_analysis(file_path, target_variable, data, save, area_level, 'sss',
                                                    collection, mapping_variable)
                 graphs_str.append(result)
 
         else:
+
+
             result = PySAL_SA.spatial_analysis(file_path, target_variable, df, save, area_level, 'sss',
                                                collection, mapping_variable)
             graphs_str.append(result)

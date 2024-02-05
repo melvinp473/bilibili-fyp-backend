@@ -59,6 +59,7 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
     #         else:
     #             print(f"No match found for Code: {code}")
 
+    gdf.dropna(axis=0)
     print(min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
     w = DistanceBand.from_dataframe(gdf, threshold=min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
 
