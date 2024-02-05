@@ -437,10 +437,17 @@ def create_app(debug=False):
             for year in years:
                 data = df.loc[df['Year'] == year]
 
+                if year == 2011:
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"\
+                            "aus_pha_shape_files/pha_shape_files/2011/PHA_AUST_Gen_500_Oz_Lamberts.shp"
+                elif year == 2016:
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"\
+                            "aus_pha_shape_files/pha_shape_files/2016/PHA_2016_AUST_Gen50.shp"
 
+                elif year == 2021:
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"
+                    "aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp"
 
-                file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp' \
-                            '/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
 
                 result = PySAL_SA.spatial_analysis(file_path, target_variable, data, save, area_level, 'sss',
                                                    collection, mapping_variable)
