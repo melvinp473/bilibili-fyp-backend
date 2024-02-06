@@ -419,6 +419,11 @@ def create_app(debug=False):
         target_variable = request_json['target_variable']
         save = request_json['save']
         mapping_variable = request_json['mapping_variable']
+        countries_params = request_json['countries_params']
+        countries_list = countries_params['locations_list'][0]
+        countries_code = countries_list['location_code']
+
+
 
         file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp' \
                     '/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
@@ -449,6 +454,8 @@ def create_app(debug=False):
                     file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"\
                     "aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp"
 
+                if countries_code == "AS":
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/asia_map/Shapefiles/asia_map.shp"
                 result = PySAL_SA.spatial_analysis(file_path, target_variable, data, save, area_level, 'sss',
                                                    collection, mapping_variable)
                 graphs_str.append(result)

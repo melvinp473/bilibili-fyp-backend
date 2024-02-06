@@ -30,7 +30,11 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
 
     matching_columns = [col for col in gdf.columns if target_code.lower() in col.lower()]
     matching = matching_columns[0]
-    gdf[matching] = gdf[matching].astype(int)
+    if mapping_variable == "Country Name":
+        matching = "name"
+        gdf[matching] = gdf[matching]
+    else:
+        gdf[matching] = gdf[matching].astype(int)
     gdf['Value'] = np.nan
 
     #
@@ -48,8 +52,10 @@ def spatial_analysis(shp_file_path, target_variable, data_frame, save, locations
             else:
                 print(f"No match found for Code: {code}")
 
+    if mapping_variable != "Country Name":
+        gdf = gdf.dropna(axis=0)
 
-    gdf = gdf.dropna(axis=0)
+    print(gdf[gdf.geometry.name])
     print(min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
     w = DistanceBand.from_dataframe(gdf, threshold=min_threshold_distance(get_points_array(gdf[gdf.geometry.name])))
 
@@ -156,15 +162,3 @@ def save_results(gdf, data_frame, collection, mapping_variable, matching):
     dataset_id = ObjectId(dataset_id)
     collection.update_one({'_id': dataset_id}, {"$set": {"attributes": column_names}})
 
-"Testing code"
-# file_path = '../shp/aus_pha_shape_files/pha_shape_files/2021'
-# target_variable = 'Deaths from cir'
-# dataset_id = '65b734a767d33b5b17c5c115'
-# db = mongo_db_function.get_database('FIT4701')
-# user_id = ''
-# area_level = ''
-# collection = mongo_db_function.get_collection(db, "Data")
-#
-# data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
-# df = pd.DataFrame(data)
-# spatial_analysis(file_path,target_variable,df,user_id,area_level)s
