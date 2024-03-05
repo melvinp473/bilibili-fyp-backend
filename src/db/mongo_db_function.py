@@ -52,8 +52,8 @@ def upsert_document(collection: Collection, id, doc_dict: dict):
 def create_document(collection: Collection, doc_dict: dict):
 
     collection.insert_one(document=doc_dict)
-    for key, value in doc_dict.items():
-        print(key, ' : ', value)
+    # for key, value in doc_dict.items():
+    #     print(key, ' : ', value)
     return doc_dict
 
 def delete_document(collection: Collection, id):

@@ -30,6 +30,7 @@ def imputation(dataset_id, strategy_type, variables):
     dataset_id_val = store[0].get('DATASET_ID')
 
     df = pd.DataFrame(data=store)
+    print(df.dtypes)
     df = df.drop('DATASET_ID', axis=1)
     df = df.drop('_id', axis=1)
     df_new = df

@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 from io import BytesIO
-
+import os
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -10,8 +10,8 @@ from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 import numpy as np
 from ..db import mongo_db_function
-from ..ml import regression, preprocessing, classification
-
+from ..ml import regression, preprocessing, classification, PySAL_SA
+from ..shp import *
 
 def create_app(debug=False):
     # print(os.getenv('FLASK_ENV'))
@@ -409,6 +409,72 @@ def create_app(debug=False):
             'flag': f'{delete_dataset_result.acknowledged}',
             'data_rows_removed': f'{delete_data_result.deleted_count}',
         })
+
+    @application.route('/spatial-analysis', methods=['POST'])
+    def do_spatial_analysis():
+        request_json = request.get_json()
+        dataset_id = request_json['DATASET_ID']
+        user_id = request_json['user_id']
+        area_level = request_json['area_level']
+        target_variable = request_json['target_variable']
+        save = request_json['save']
+        mapping_variable = request_json['mapping_variable']
+        countries_params = request_json['countries_params']
+        countries_list = countries_params['locations_list'][0]
+        countries_code = countries_list['location_code']
+
+
+
+        file_path = 'https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp' \
+                    '/aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp'
+
+        db = mongo_db_function.get_database('FIT4701')
+        collection = mongo_db_function.get_collection(db, "Data")
+        data = mongo_db_function.get_by_query(collection, {'DATASET_ID': dataset_id}, 'DATASET_ID')
+        df = pd.DataFrame(data)
+        graphs_str = []
+        years = []
+        if save:
+            mongo_db_function.delete_dataset(collection, dataset_id)
+        if 'Year' in df.columns:
+            years = df['Year'].unique()
+
+        if len(years) > 0:
+            for year in years:
+                data = df.loc[df['Year'] == year]
+
+                if year == 2011:
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"\
+                            "aus_pha_shape_files/pha_shape_files/2011/PHA_AUST_Gen_500_Oz_Lamberts.shp"
+                elif year == 2016:
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"\
+                            "aus_pha_shape_files/pha_shape_files/2016/PHA_2016_AUST_Gen50.shp"
+
+                elif year == 2021:
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/"\
+                    "aus_pha_shape_files/pha_shape_files/2021/PHA_2021_Aust_GDA2020_Gen50.shp"
+
+                if countries_code == "AS":
+                    file_path = "https://github.com/FIT4701/bilibili-fyp-backend/raw/dev/src/shp/asia_map/Shapefiles/asia_map.shp"
+                result = PySAL_SA.spatial_analysis(file_path, target_variable, data, save, area_level, 'sss',
+                                                   collection, mapping_variable)
+                graphs_str.append(result)
+
+        else:
+
+
+            result = PySAL_SA.spatial_analysis(file_path, target_variable, df, save, area_level, 'sss',
+                                               collection, mapping_variable)
+            graphs_str.append(result)
+
+        return jsonify(graphs_str)
+
+        # result = PySAL_SA.spatial_analysis(file_path,target_variable,df,True,area_level,'sss',collection)
+        # json_data = jsonify(result)
+        #
+        # json_data = json_data
+        #
+        # return json_data
 
     # @application.route('/feature-selection', methods=['POST'])
     # def feature_selection():
