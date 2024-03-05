@@ -29,8 +29,11 @@ def decision_trees_classification(dataframe, target_variable: str, independent_v
 
     clf = tree.DecisionTreeClassifier(**algo_params)
     clf.fit(train_x, train_y)
-    test_y_ = clf.predict(test_x)
+    # test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
+
+    new_threshold = 0.40
+    test_y_ = (test_y_auc >= new_threshold).astype(int)
 
     print("---------------------------------------------------------------------")
 
@@ -99,8 +102,11 @@ def random_forest_classification(dataframe, target_variable: str, independent_va
 
     clf = RandomForestClassifier(**algo_params)
     clf.fit(train_x, train_y)
-    test_y_ = clf.predict(test_x)
+    # test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
+
+    new_threshold = 0.40
+    test_y_ = (test_y_auc >= new_threshold).astype(int)
 
     print("---------------------------------------------------------------------")
 
@@ -128,22 +134,23 @@ def random_forest_classification(dataframe, target_variable: str, independent_va
 
     # Confusion Matrix
     cm = confusion_matrix(test_y, test_y_)
-    cm_disp = ConfusionMatrixDisplay.from_estimator(clf, test_x, test_y)
+    cm_disp = ConfusionMatrixDisplay.from_predictions(y_true=test_y, y_pred=test_y_)
     fig_cm = cm_disp.figure_
     fig_cm.suptitle("Confusion Matrix")
     fig_cm.tight_layout()
     cm_plot = plotting.figure_to_base64(fig_cm)
 
+    tn, fp, fn, tp = cm.ravel()
     print(test_y_)
     auc = roc_auc_score(test_y, test_y_auc)
     print("AUC-ROC:", auc)
     precision = precision_score(test_y, test_y_, pos_label=1.0)
+    precision2 = tp / (tp + fp)
     print("Precision:", precision)
     accuracy = accuracy_score(test_y, test_y_.round())
     print("Accuracy:", accuracy)
     recall = recall_score(test_y, test_y_, pos_label=1.0)
     print("Recall:", recall)
-    tn, fp, fn, tp = cm.ravel()
     specificity = tn / (tn + fp)
     print("Specificity:", specificity)
     f1 = f1_score(test_y, test_y_, pos_label=1.0)
@@ -176,9 +183,11 @@ def k_nearest_neighbor_classification(dataframe, target_variable: str, independe
 
     clf = KNeighborsClassifier(**algo_params)
     clf.fit(train_x, train_y)
-
-    test_y_ = clf.predict(test_x)
+    # test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
+
+    new_threshold = 0.40
+    test_y_ = (test_y_auc >= new_threshold).astype(int)
 
     print("---------------------------------------------------------------------")
 
@@ -231,8 +240,11 @@ def gaussian_naive_bayes(dataframe, target_variable: str, independent_variables:
 
     clf = GaussianNB()
     clf.fit(train_x, train_y)
-    test_y_ = clf.predict(test_x)
+    # test_y_ = clf.predict(test_x)
     test_y_auc = clf.predict_proba(test_x)[:, 1]
+
+    new_threshold = 0.40
+    test_y_ = (test_y_auc >= new_threshold).astype(int)
 
     print("---------------------------------------------------------------------")
 
