@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 
 
 def figure_to_base64(figure):
+    """
+    Encode scikit-learn figure into base64 format
+    """
     buffer = BytesIO()
     figure.savefig(buffer, format='png')
     plot_as_base64 = b64encode(buffer.getvalue()).decode()

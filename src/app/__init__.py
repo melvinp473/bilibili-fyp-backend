@@ -46,7 +46,6 @@ def create_app(debug=False):
         db = mongo_db_function.get_database('FIT4701')
         collection = mongo_db_function.get_collection(db, "Dataset")
         list = mongo_db_function.get_by_query(collection, request_json, "user_id")
-        # new_list = json.dumps(list)
         r_data = {'data': list}
         print(r_data)
         response = jsonify(r_data)
@@ -94,6 +93,7 @@ def create_app(debug=False):
 
         else:
             split_datasets = [store]
+
         for split_data in split_datasets:
             df = mongo_db_function.list_to_df(split_data)
             try:
@@ -102,7 +102,6 @@ def create_app(debug=False):
                                    value is not None and value != ''}
                 else:
                     algo_params = request_json["algo_params"]
-
 
                 if algo == "linear_regr":
                     return_dict = regression.linear_regression(df, target_variable, independent_variables)
@@ -164,7 +163,6 @@ def create_app(debug=False):
         json_data = jsonify(return_dict)
 
         json_data = json_data
-
 
         return json_data
 
@@ -475,17 +473,6 @@ def create_app(debug=False):
         # json_data = json_data
         #
         # return json_data
-
-    # @application.route('/feature-selection', methods=['POST'])
-    # def feature_selection():
-    #     request_json = request.get_json()
-    #     dataset_id = request_json['DATASET_ID']
-    #     k = request_json['k']
-    #     regression_type = request_json['k']
-    #     target_attribute = request_json['k']
-    #
-    #     response = preprocessing.k_selection(dataset_id, k, regression_type, target_attribute)
-    #     return jsonify({'attributes': response})
 
     return application
 

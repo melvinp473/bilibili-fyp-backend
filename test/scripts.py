@@ -1,5 +1,6 @@
-from mongo_db_function import *
 from datetime import datetime
+
+from src.db.mongo_db_function import get_database
 
 
 def delete_old_datasets():

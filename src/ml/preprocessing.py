@@ -33,12 +33,7 @@ def imputation(dataset_id, strategy_type, variables):
     print(df.dtypes)
     df = df.drop('DATASET_ID', axis=1)
     df = df.drop('_id', axis=1)
-    df_new = df
 
-    # df = pd.DataFrame(data=db_data)
-    # df = df.replace(None, np.nan)
-
-    # arr = df.values
     df_temp = pd.DataFrame()
     for variable in variables:
         df_temp[variable] = df[variable]
@@ -46,14 +41,11 @@ def imputation(dataset_id, strategy_type, variables):
     imp_mean = SimpleImputer(missing_values=np.nan, strategy=strategy_type)
     df_temp = pd.DataFrame(data=imp_mean.fit_transform(df_temp), columns=variables)
 
-    # for variable in variables:
-    #     df_new[variable] = df_temp[variable]
-
     for variable in variables:
         df[variable] = df_temp[variable]
     arr_new = df.values
     documents = []
-    # arr_new = df_new.values
+
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
@@ -77,21 +69,13 @@ def standardization(dataset_id, variables):
     keys = list(store[0].keys())
     keys.pop(0)
     keys.remove("DATASET_ID")
-    # keys.remove('CODE')
     dataset_id_val = store[0].get('DATASET_ID')
-    # for item in store:
-    #     item.pop('DATASET_ID')
-    #     item.pop('_id')
-    #     item.pop('CODE')
-    #     values = list(item.values())
-    #     db_data.append(values)
-    # df = pd.DataFrame(data=db_data)
 
     df = pd.DataFrame(data=store)
     df = df.drop('DATASET_ID', axis=1)
     df = df.drop('_id', axis=1)
-    # arr = df.values
     df_temp = pd.DataFrame()
+
     for variable in variables:
         df_temp[variable] = df[variable]
 
@@ -100,14 +84,12 @@ def standardization(dataset_id, variables):
         df[variable] = df_temp[variable]
     arr_new = df.values
     documents = []
-    # code = 1
+
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
-        # temp_dict['CODE'] = code
-        # code = code + 1
         documents.append(temp_dict)
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     mongo_db_function.insert_dataset(collection, documents)
@@ -121,25 +103,13 @@ def normalization(dataset_id, variables):
     keys = list(store[0].keys())
     keys.pop(0)
     keys.remove("DATASET_ID")
-    # keys.remove('CODE')
     dataset_id_val = store[0].get('DATASET_ID')
-    # for item in store:
-    #     item.pop('DATASET_ID')
-    #     item.pop('_id')
-    #     item.pop('CODE')
-    #     values = list(item.values())
-    #     db_data.append(values)
-    # df = pd.DataFrame(data=db_data)
-    # x = df.values
-    #
-    # scaler = preprocessing.MinMaxScaler()
-    # scaler.fit(x)
-    # x_processed = scaler.transform(x)
+
     df = pd.DataFrame(data=store)
     df = df.drop('DATASET_ID', axis=1)
     df = df.drop('_id', axis=1)
-    # arr = df.values
     df_temp = pd.DataFrame()
+
     for variable in variables:
         df_temp[variable] = df[variable]
 
@@ -149,14 +119,11 @@ def normalization(dataset_id, variables):
     arr_new = df.values
 
     documents = []
-    # code = 1
     for element in arr_new:
         temp_dict = {}
         for i in range(len(keys)):
             temp_dict[keys[i]] = element[i]
         temp_dict['DATASET_ID'] = dataset_id_val
-        # temp_dict['CODE'] = code
-        # code = code + 1
         documents.append(temp_dict)
     mongo_db_function.delete_dataset(collection, dataset_id_val)
     mongo_db_function.insert_dataset(collection, documents)
@@ -239,12 +206,6 @@ def label(dataset_id, variables):
     keys.pop(0)
     keys.remove("DATASET_ID")
     dataset_id_val = store[0].get('DATASET_ID')
-    # for item in store:
-    #     item.pop('DATASET_ID')
-    #     item.pop('_id')
-    #     values = list(item.values())
-    #     db_data.append(values)
-    # df = pd.DataFrame(data=db_data)
     df = pd.DataFrame(data=store)
     df = df.drop('DATASET_ID', axis=1)
     df = df.drop('_id', axis=1)
@@ -350,10 +311,6 @@ def wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator
         elif model == "regression":
             estimator = neighbors.KNeighborsRegressor(**estimator_params)
 
-    # if selection_type == "sfs":
-    #     sfs = SequentialFeatureSelector(estimator, n_features_to_select=k, scoring=score_type)
-    #     sfs.fit_transform(x, y)
-    #     attributes = x.columns[sfs.get_support()]
     if selection_type == "sfs":
         sfs = SequentialFeatureSelector(estimator, k_features=k, scoring=score_type)
         sfs.fit_transform(x, y)
@@ -371,6 +328,7 @@ def wrapper_selection(dataset_id, k, selection_type, target_attribute, estimator
         attributes.append(rfe.score(x, y))
 
         return attributes
+
 
 def split_dataset(dataset_id, target_attribute):
 
