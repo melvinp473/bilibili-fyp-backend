@@ -32,3 +32,7 @@ six==1.16.0
 threadpoolctl==3.1.0
 tzdata==2023.3
 Werkzeug==1.0.0
+
+geopandas~=1.0.1
+esda~=2.6.0
+libpysal~=4.12.0
